@@ -110,6 +110,7 @@ def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
     for i, s_ref in enumerate(s_ref_list):
         print("x_src.shape:", x_src.shape)
         print("s_ref.shape:", s_ref.shape)
+        print("y_ref:", y_ref)
         x_fake = nets.generator(x_src, s_ref, masks=masks)
         print(str(i)+'.jpg')
         save_image(x_fake, N, str(i)+'.jpg')
