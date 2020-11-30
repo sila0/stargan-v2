@@ -106,9 +106,9 @@ def translate_using_reference(nets, args, x_src, x_ref, y_ref, filename):
 
     x_src_with_wb = torch.cat([wb, x_src], dim=0)
     print("x_src_with_wb:", x_src_with_wb.shape)
-    
+
     masks = nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
-    print('masks:', masks.shape)
+    print('masks:', masks)
 
     s_ref = nets.style_encoder(x_ref, y_ref)
     print("x_ref:", x_ref.shape)
