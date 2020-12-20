@@ -226,7 +226,7 @@ def compute_d_loss(nets, args, x_real, y_org, y_trg, z_trg=None, x_ref=None, mas
 
 def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, masks=None):
     assert (z_trgs is None) != (x_refs is None)
-    print("x_real_shape", x_real.shpae)
+    print("x_real_shape", x_real.shape)
     if z_trgs is not None:
         z_trg, z_trg2 = z_trgs
     if x_refs is not None:
@@ -239,7 +239,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
         s_trg = nets.style_encoder(x_ref, y_trg)
 
     x_fake = nets.generator(x_real, s_trg, masks=masks)
-    print("x_fake_shape", x_fake.shpae)
+    print("x_fake_shape", x_fake.shape)
     out = nets.discriminator(x_fake, y_trg)
     loss_adv = adv_loss(out, 1)
 
