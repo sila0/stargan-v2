@@ -281,6 +281,14 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     print('x_real[0]:', x.clamp_(0, 1))
     x = x.clamp_(0, 1)
 
+    inv_normalize = transforms.Normalize(
+        mean=[-1, -1, -1],
+        std=[1/0.5, 1/0.5, 1/0.5])
+        
+    inv_tensor = inv_normalize(x)
+    print('inv_tensor:', inv_tensor)
+
+
     vutils.save_image(x.cpu(), 'sila.jpg', padding=0)
     
     a,b = m(x_real[0], return_prob=True)
