@@ -238,7 +238,7 @@ def compute_d_loss(nets, args, x_real, y_org, y_trg, z_trg=None, x_ref=None, mas
                        reg=loss_reg.item())
 
 
-def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, masks=None):
+def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, masks=None):    
     assert (z_trgs is None) != (x_refs is None)
     if z_trgs is not None:
         z_trg, z_trg2 = z_trgs
@@ -275,7 +275,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     # test
-    match_loss(mtcnn, resnet, x_real, x_fake)
+    match_loss(x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
@@ -309,7 +309,10 @@ def r1_reg(d_out, x_in):
     reg = 0.5 * grad_dout2.view(batch_size, -1).sum(1).mean(0)
     return reg
 
-def match_loss(mtcnn, resnet, x_real, x_fake):
+def match_loss(x_real, x_fake):
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
+    resnet = InceptionResnetV1(pretrained='vggface2').eval()
+
     # invert
     x_real = (x_real + 1) / 2
     x_real = x_real.clamp_(0, 1)
@@ -337,6 +340,7 @@ def match_loss(mtcnn, resnet, x_real, x_fake):
 
     embeddings = resnet(stacked_real_aligned).detach().cpu()
     print('embeddings:', embeddings.shape)
+
 
     # real_aligned, prob = mtcnn(x_real, return_prob=True)
     # real_stacked = torch.stack(real_aligned)
