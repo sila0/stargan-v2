@@ -313,7 +313,7 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(mtcnn, resnet, x_real, x_fake):
-        x_src, y_src = inputs.x_src, inputs.y_src
+    x_src, y_src = inputs.x_src, inputs.y_src
     x_ref, y_ref = inputs.x_ref, inputs.y_ref
 
     real_aligned, prob = mtcnn(x_real, return_prob=True)
