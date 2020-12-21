@@ -128,7 +128,8 @@ class Solver(nn.Module):
 
             # train the generator
             g_loss, g_losses_latent = compute_g_loss(
-                nets, args, x_real, y_org, y_trg, z_trgs=[z_trg, z_trg2], masks=masks)
+                nets, args, x_real, y_org, y_trg, z_trgs=[z_trg, z_trg2], masks=masks,
+                self.mtcnn, self.resnet)
             self._reset_grad()
             g_loss.backward()
             optims.generator.step()
@@ -136,7 +137,8 @@ class Solver(nn.Module):
             optims.style_encoder.step()
 
             g_loss, g_losses_ref = compute_g_loss(
-                nets, args, x_real, y_org, y_trg, x_refs=[x_ref, x_ref2], masks=masks)
+                nets, args, x_real, y_org, y_trg, x_refs=[x_ref, x_ref2], masks=masks,
+                self.mtcnn, self.resnet)
             self._reset_grad()
             g_loss.backward()
             optims.generator.step()
@@ -231,7 +233,7 @@ def compute_d_loss(nets, args, x_real, y_org, y_trg, z_trg=None, x_ref=None, mas
                        reg=loss_reg.item())
 
 
-def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, masks=None):
+def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, masks=None, mtcnn, resnet):
     assert (z_trgs is None) != (x_refs is None)
     print("x_real_shape", x_real.shape)
     if z_trgs is not None:
@@ -270,7 +272,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     # test loss
-    match_loss(self.mtcnn, self.resnet, x_real, x_fake)
+    match_loss(mtcnn, resnet, x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
