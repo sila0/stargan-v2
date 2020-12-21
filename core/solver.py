@@ -283,7 +283,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     x_real = x_real.clamp_(0, 1)
     
     
-    x_real_imgs = [transforms.ToPILImage()(x) for x in x_real]
+    x_real_imgs = [tensor(transforms.ToPILImage()(x)) for x in x_real]
     print('x_real_imgs:', len(x_real_imgs))
     # results.save('result.jpg')
     
