@@ -342,7 +342,8 @@ def match_loss(x_real, x_fake):
 
     # fake
     print("x_fake_shape", x_fake.shape)
-        c = 0
+    
+    c = 0
     for x in x_fake:
         print(1)
         img = transforms.ToPILImage()(x)
