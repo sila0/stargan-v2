@@ -289,6 +289,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     
     stacked_im = torch.stack(x_real_tensors)
     print("stacked_im:", stacked_im.shape)
+    print("stacked_im:", stacked_im)
 
     real_aligned, prob = mtcnn(stacked_im, return_prob=True)
     stacked_real_aligned = torch.stack(real_aligned)
