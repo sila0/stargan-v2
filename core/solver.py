@@ -270,7 +270,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     # test loss
-    match_loss(x_real, x_fake)
+    match_loss(self.mtcnn, self.resnet, x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
@@ -304,7 +304,7 @@ def r1_reg(d_out, x_in):
     reg = 0.5 * grad_dout2.view(batch_size, -1).sum(1).mean(0)
     return reg
 
-def match_loss(x_real, x_fake):
+def match_loss(mtcnn, resnet, tx_real, x_fake):
     real_aligned, prob = self.mtcnn(x_real, return_prob=True)
     real_stacked = torch.stack(real_aligned)
     real_embeddings = self.resnet(real_stacked).detach().cpu()
