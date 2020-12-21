@@ -11,7 +11,7 @@ Creative Commons, PO Box 1866, Mountain View, CA 94042, USA.
 import os
 from os.path import join as ospj
 import time
-import datetime
+import datetime as dt
 from munch import Munch
 
 import torch
@@ -158,7 +158,7 @@ class Solver(nn.Module):
             # print out log info
             if (i+1) % args.print_every == 0:
                 elapsed = time.time() - start_time
-                elapsed = str(datetime.timedelta(seconds=elapsed))[:-7]
+                elapsed = str(dt.timedelta(seconds=elapsed))[:-7]
                 log = "Elapsed time [%s], Iteration [%i/%i], " % (elapsed, i+1, args.total_iters)
                 all_losses = dict()
                 for loss, prefix in zip([d_losses_latent, d_losses_ref, g_losses_latent, g_losses_ref],
