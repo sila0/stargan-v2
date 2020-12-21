@@ -319,9 +319,12 @@ def match_loss(mtcnn, resnet, x_real, x_fake):
     print("x_real_shape", x_real.shape)
     print("x_fake_shape", x_fake.shape)    
     
+    c = 0
     for x in x_real:
         print(1)
         img = transforms.ToPILImage()(x)
+        img.save(str(c)+'.jpg')
+        c = c + 1
         x_real_tensors.append(tensor(img))
     print('x_real_tensors:', len(x_real_tensors))
     
