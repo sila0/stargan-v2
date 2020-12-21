@@ -25,6 +25,7 @@ import core.utils as utils
 from metrics.eval import calculate_metrics
 
 from facenet_pytorch import MTCNN, InceptionResnetV1
+from fastbook import *
 
 import torchvision.utils as vutils
 from torchvision import transforms
@@ -283,10 +284,10 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     x = x.clamp_(0, 1)
     
     results = transforms.ToPILImage()(x[0])
+    print('results:', results)
     results.save('result.jpg')
 
-    print('inv_tensor:', torch.tensor(results))
-
+    print('inv_tensor:', tensor(results).shape)
 
     vutils.save_image(x.cpu(), 'sila.jpg', padding=0)
     
