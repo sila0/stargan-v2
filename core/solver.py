@@ -328,7 +328,7 @@ def match_loss(mtcnn, resnet, x_real, x_fake):
         x_real_tensors.append(tensor(img))
     print('x_real_tensors:', len(x_real_tensors))
     
-    stacked_tensor = torch.stack(x_real_tensors)
+    stacked_tensor = torch.stack(x_real_tensors).to('cpu')
     print("stacked_tensor:", stacked_tensor.shape)
 
     real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
