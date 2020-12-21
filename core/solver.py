@@ -284,7 +284,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     
     results = transforms.ToPILImage()(x[0])
         
-    print('inv_tensor:', results)
+    print('inv_tensor:', results.ToTensor())
 
 
     vutils.save_image(x.cpu(), 'sila.jpg', padding=0)
