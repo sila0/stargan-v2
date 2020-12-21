@@ -27,6 +27,7 @@ from metrics.eval import calculate_metrics
 from facenet_pytorch import MTCNN, InceptionResnetV1
 
 import torchvision.utils as vutils
+from torchvision import transforms
 
 
 class Solver(nn.Module):
