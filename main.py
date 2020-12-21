@@ -39,6 +39,7 @@ def main(args):
     if args.mode == 'train':
         assert len(subdirs(args.train_img_dir)) == args.num_domains
         assert len(subdirs(args.val_img_dir)) == args.num_domains
+        
         loaders = Munch(src=get_train_loader(root=args.train_img_dir,
                                              which='source',
                                              img_size=args.img_size,

@@ -24,6 +24,8 @@ from core.data_loader import InputFetcher
 import core.utils as utils
 from metrics.eval import calculate_metrics
 
+from facenet_pytorch import MTCNN, InceptionResnetV1
+
 
 class Solver(nn.Module):
     def __init__(self, args):
@@ -33,6 +35,7 @@ class Solver(nn.Module):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
         self.nets, self.nets_ema = build_model(args)
+
         # below setattrs are to make networks be children of Solver, e.g., for self.to(self.device)
         for name, module in self.nets.items():
             utils.print_network(module, name)
@@ -58,7 +61,11 @@ class Solver(nn.Module):
         else:
             self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), **self.nets_ema)]
 
+        self.mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
+        self.resnet = InceptionResnetV1(pretrained='vggface2').eval()
+
         self.to(self.device)
+
         for name, network in self.named_children():
             # Do not initialize the FAN parameters
             if ('ema' not in name) and ('fan' not in name):
@@ -262,6 +269,9 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     x_rec = nets.generator(x_fake, s_org, masks=masks)
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
+    # test loss
+    match_loss(x_real, x_fake)
+
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
     return loss, Munch(adv=loss_adv.item(),
@@ -293,3 +303,15 @@ def r1_reg(d_out, x_in):
     assert(grad_dout2.size() == x_in.size())
     reg = 0.5 * grad_dout2.view(batch_size, -1).sum(1).mean(0)
     return reg
+
+def match_loss(x_real, x_fake):
+    real_aligned, prob = self.mtcnn(x_real, return_prob=True)
+    real_stacked = torch.stack(real_aligned)
+    real_embeddings = self.resnet(real_stacked).detach().cpu()
+
+    fake_aligned, prob = self.mtcnn(x_fake, return_prob=True)
+    fake_stacked = torch.stack(fake_aligned)
+    fake_embeddings = self.resnet(fake_stacked).detach().cpu()
+
+    print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
+    
