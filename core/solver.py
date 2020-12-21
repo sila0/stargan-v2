@@ -281,7 +281,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     print('x_real[0]:', x.clamp_(0, 1))
     x = x.clamp_(0, 1)
 
-    vutils(x.cpu(), 'sila.jpg', padding=0)
+    vutils.save_image(x.cpu(), 'sila.jpg', padding=0)
     
     a,b = m(x_real[0], return_prob=True)
     print('a', a.shape)
