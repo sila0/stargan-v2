@@ -65,8 +65,8 @@ class Solver(nn.Module):
         else:
             self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), **self.nets_ema)]
 
-        self.mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
-        self.resnet = InceptionResnetV1(pretrained='vggface2').eval()
+        # self.mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
+        # self.resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
         self.to(self.device)
 
@@ -308,7 +308,7 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(x_real, x_fake):
-    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
     # invert
