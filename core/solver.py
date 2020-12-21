@@ -283,11 +283,13 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     x_real = x_real.clamp_(0, 1)
     
     
-    x_real_imgs = [tensor(transforms.ToPILImage()(x)) for x in x_real]
-    print('x_real_imgs:', len(x_real_imgs))
+    x_real_tensors = [tensor(transforms.ToPILImage()(x)) for x in x_real]
+    print('x_real_tensors:', len(x_real_tensors))
     # results.save('result.jpg')
     
-    stacked_im = torch.stack(x_real_imgs)
+    stacked_im = torch.stack(x_real_tensors)
+    print("stacked_im:", stacked_im.shape)
+
     real_ali, prob = mtcnn(stacked_im, return_prob=True)
     embeddings = resnet(stacked_X).detach().cpu()
     print('embeddings:', embeddings.shape)
