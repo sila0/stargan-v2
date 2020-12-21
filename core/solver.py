@@ -112,7 +112,7 @@ class Solver(nn.Module):
             # fetch images and labels
             inputs = next(fetcher)
             x_real, y_org = inputs.x_src, inputs.y_src
-            print('x_real', x_real[0])
+            # print('x_real', x_real[0])
             x_ref, x_ref2, y_trg = inputs.x_ref, inputs.x_ref2, inputs.y_ref
             z_trg, z_trg2 = inputs.z_trg, inputs.z_trg2
 
@@ -308,18 +308,19 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(x_real, x_fake):
-    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
     # invert
     x_real = (x_real + 1) / 2
     x_real = x_real.clamp_(0, 1)
     x_real_tensors = []
+    x_fake_tensors = []
 
     # test loss
     print("x_real_shape", x_real.shape)
-    print("x_fake_shape", x_fake.shape)    
     
+    # real
     c = 0
     for x in x_real:
         print(1)
@@ -338,6 +339,27 @@ def match_loss(x_real, x_fake):
 
     embeddings = resnet(stacked_real_aligned).detach().cpu()
     print('embeddings:', embeddings.shape)
+
+    # fake
+    print("x_fake_shape", x_fake.shape)
+        c = 0
+    for x in x_fake:
+        print(1)
+        img = transforms.ToPILImage()(x)
+        img.save(str(c)+'.jpg')
+        c = c + 1
+        x_fake_tensors.append(tensor(img))
+    print('x_real_tensors:', len(x_fake_tensors))
+    
+    stacked_fake_tensor = torch.stack(x_fake_tensors).to('cpu')
+    print("stacked_fake_tensor:", stacked_fake_tensor.shape)
+
+    fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
+    stacked_fake_aligned = torch.stack(fake_aligned)
+    print("stacked_fake_aligned:", stacked_fake_aligned.shape)
+
+    fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
+    print('fake_embeddings:', fake_embeddings.shape)
 
 
     # real_aligned, prob = mtcnn(x_real, return_prob=True)
