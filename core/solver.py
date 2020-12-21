@@ -277,16 +277,20 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     # test loss
     print("x_real_shape", x_real.shape)
     print("x_fake_shape", x_fake.shape)
-    m = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
 
     # invert
-    x = (x_real + 1) / 2
-    x = x.clamp_(0, 1)
+    x_real = (x_real + 1) / 2
+    x_real = x_real.clamp_(0, 1)
     
     
-    imgs = [transforms.ToPILImage()(x[0]) for t in x]
-    print('results:', imgs.shape)
+    x_real_imgs = [transforms.ToPILImage()(x) for x in x_real]
+    print('x_real_imgs:', x_real_imgs.size)
     # results.save('result.jpg')
+    
+    stacked_im = torch.stack(x_real_imgs)
+    real_ali, prob = mtcnn(stacked_im, return_prob=True)
+    embeddings = resnet(stacked_X).detach().cpu()
+    print('embeddings:', embeddings.shape)
 
     inv_tensor = tensor(imgs)
 
