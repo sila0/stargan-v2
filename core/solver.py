@@ -282,7 +282,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     print('x_real[0]:', x.clamp_(0, 1))
     x = x.clamp_(0, 1)
     
-    results = transforms.ToPILImage()(x)
+    results = transforms.ToPILImage()(x[0])
         
     print('inv_tensor:', results)
 
