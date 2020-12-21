@@ -272,8 +272,9 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     # test loss
     print("x_real_shape", x_real.shape)
     print("x_fake_shape", x_fake.shape)
-    m = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
+    m = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda'
 
+    print('x_real[0]:', x_real[0])
     a,b = m(x_real[0], return_prob=True)
     print('a', a.shape)
 
@@ -312,6 +313,9 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(mtcnn, resnet, x_real, x_fake):
+        x_src, y_src = inputs.x_src, inputs.y_src
+    x_ref, y_ref = inputs.x_ref, inputs.y_ref
+
     real_aligned, prob = mtcnn(x_real, return_prob=True)
     real_stacked = torch.stack(real_aligned)
     real_embeddings = resnet(real_stacked).detach().cpu()
