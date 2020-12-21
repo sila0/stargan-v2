@@ -274,38 +274,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     x_rec = nets.generator(x_fake, s_org, masks=masks)
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
-    # test loss
-    print("x_real_shape", x_real.shape)
-    print("x_fake_shape", x_fake.shape)
-
-    # invert
-    x_real = (x_real + 1) / 2
-    x_real = x_real.clamp_(0, 1)
-    
-    
-    x_real_tensors = [tensor(transforms.ToPILImage()(x)) for x in x_real]
-    print('x_real_tensors:', len(x_real_tensors))
-    # results.save('result.jpg')
-    
-    stacked_im = torch.stack(x_real_tensors)
-    print("stacked_im:", stacked_im.shape)
-    print("stacked_im:", stacked_im)
-
-    real_aligned, prob = mtcnn(x_real_tensors[0], return_prob=True)
-    stacked_real_aligned = torch.stack(real_aligned)
-
-    embeddings = resnet(stacked_real_aligned).detach().cpu()
-    print('embeddings:', embeddings.shape)
-
-    inv_tensor = tensor(imgs)
-
-    print('inv_tensor:', inv_tensor.shape, inv_tensor)
-
-    vutils.save_image(x.cpu(), 'sila.jpg', padding=0)
-    
-    a, b = m(inv_tensor, return_prob=True)
-    print('a', a.shape)
-
+    # test
     match_loss(mtcnn, resnet, x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
@@ -341,16 +310,35 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(mtcnn, resnet, x_real, x_fake):
-    x_src, y_src = inputs.x_src, inputs.y_src
-    x_ref, y_ref = inputs.x_ref, inputs.y_ref
+    # invert
+    x_real = (x_real + 1) / 2
+    x_real = x_real.clamp_(0, 1)
 
-    real_aligned, prob = mtcnn(x_real, return_prob=True)
-    real_stacked = torch.stack(real_aligned)
-    real_embeddings = resnet(real_stacked).detach().cpu()
+    # test loss
+    print("x_real_shape", x_real.shape)
+    print("x_fake_shape", x_fake.shape)    
+    
+    x_real_tensors = [tensor(transforms.ToPILImage()(x)) for x in x_real]
+    print('x_real_tensors:', len(x_real_tensors))
+    # results.save('result.jpg')
+    
+    stacked_im = torch.stack(x_real_tensors)
+    print("stacked_im:", stacked_im.shape)
+    # print("stacked_im:", stacked_im)
 
-    fake_aligned, prob = mtcnn(x_fake, return_prob=True)
-    fake_stacked = torch.stack(fake_aligned)
-    fake_embeddings = resnet(fake_stacked).detach().cpu()
+    real_aligned, prob = mtcnn(x_real_tensors, return_prob=True)
+    stacked_real_aligned = torch.stack(real_aligned)
 
-    print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
+    embeddings = resnet(stacked_real_aligned).detach().cpu()
+    print('embeddings:', embeddings.shape)
+
+    # real_aligned, prob = mtcnn(x_real, return_prob=True)
+    # real_stacked = torch.stack(real_aligned)
+    # real_embeddings = resnet(real_stacked).detach().cpu()
+
+    # fake_aligned, prob = mtcnn(x_fake, return_prob=True)
+    # fake_stacked = torch.stack(fake_aligned)
+    # fake_embeddings = resnet(fake_stacked).detach().cpu()
+
+    # print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
     
