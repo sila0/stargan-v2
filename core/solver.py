@@ -276,7 +276,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     m = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
 
     x = (x_real + 1) / 2
-    print('x_real[0]:', x)
+    print('x_real[0]:', x.clamp_(0, 1))
     a,b = m(x_real[0], return_prob=True)
     print('a', a.shape)
 
