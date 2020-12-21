@@ -307,13 +307,13 @@ def r1_reg(d_out, x_in):
     return reg
 
 def match_loss(mtcnn, resnet, tx_real, x_fake):
-    real_aligned, prob = self.mtcnn(x_real, return_prob=True)
+    real_aligned, prob = mtcnn(x_real, return_prob=True)
     real_stacked = torch.stack(real_aligned)
-    real_embeddings = self.resnet(real_stacked).detach().cpu()
+    real_embeddings = resnet(real_stacked).detach().cpu()
 
-    fake_aligned, prob = self.mtcnn(x_fake, return_prob=True)
+    fake_aligned, prob = mtcnn(x_fake, return_prob=True)
     fake_stacked = torch.stack(fake_aligned)
-    fake_embeddings = self.resnet(fake_stacked).detach().cpu()
+    fake_embeddings = resnet(fake_stacked).detach().cpu()
 
     print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
     
