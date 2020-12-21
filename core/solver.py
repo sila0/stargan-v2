@@ -313,21 +313,24 @@ def match_loss(mtcnn, resnet, x_real, x_fake):
     # invert
     x_real = (x_real + 1) / 2
     x_real = x_real.clamp_(0, 1)
+    x_real_tensors = []
 
     # test loss
     print("x_real_shape", x_real.shape)
     print("x_fake_shape", x_fake.shape)    
     
-    x_real_tensors = [tensor(transforms.ToPILImage()(x)) for x in x_real]
+    for x in x_real:
+        print(1)
+        img = transforms.ToPILImage()(x)
+        x_real_tensors.append(tensor(img))
     print('x_real_tensors:', len(x_real_tensors))
-    # results.save('result.jpg')
     
-    stacked_im = torch.stack(x_real_tensors)
-    print("stacked_im:", stacked_im.shape)
-    # print("stacked_im:", stacked_im)
+    stacked_tensor = torch.stack(x_real_tensors)
+    print("stacked_tensor:", stacked_tensor.shape)
 
-    real_aligned, prob = mtcnn(x_real_tensors, return_prob=True)
+    real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
     stacked_real_aligned = torch.stack(real_aligned)
+    print("stacked_real_aligned:", stacked_real_aligned.shape)
 
     embeddings = resnet(stacked_real_aligned).detach().cpu()
     print('embeddings:', embeddings.shape)
