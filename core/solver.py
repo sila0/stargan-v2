@@ -284,7 +284,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     
     
     x_real_imgs = [transforms.ToPILImage()(x) for x in x_real]
-    print('x_real_imgs:', x_real_imgs.size)
+    print('x_real_imgs:', len(x_real_imgs))
     # results.save('result.jpg')
     
     stacked_im = torch.stack(x_real_imgs)
