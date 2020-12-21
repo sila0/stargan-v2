@@ -274,7 +274,7 @@ def compute_g_loss(mtcnn, resnet, nets, args, x_real, y_org, y_trg, z_trgs=None,
     print("x_fake_shape", x_fake.shape)
     m = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
 
-    a,b = m(x_real, return_prob=True)
+    a,b = m(x_real[0], return_prob=True)
     print('a', a.shape)
 
     match_loss(mtcnn, resnet, x_real, x_fake)
