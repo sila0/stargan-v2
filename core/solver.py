@@ -347,7 +347,7 @@ def match_loss(x_real, x_fake):
     for x in x_fake:
         print(1)
         img = transforms.ToPILImage()(x)
-        img.save(str(c)+'.jpg')
+        img.save('fake'+str(c)+'.jpg')
         c = c + 1
         x_fake_tensors.append(tensor(img))
     print('x_real_tensors:', len(x_fake_tensors))
