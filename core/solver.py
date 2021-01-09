@@ -121,7 +121,7 @@ class Solver(nn.Module):
             # train the discriminator
             d_loss, d_losses_latent = compute_d_loss(
                 nets, args, x_real, y_org, y_trg, z_trg=z_trg, masks=masks)
-            self.   ()
+            self._reset_grad()
             d_loss.backward()
             optims.discriminator.step()
 
