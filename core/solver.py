@@ -121,7 +121,7 @@ class Solver(nn.Module):
             # train the discriminator
             d_loss, d_losses_latent = compute_d_loss(
                 nets, args, x_real, y_org, y_trg, z_trg=z_trg, masks=masks)
-            self._reset_grad()
+            self.   ()
             d_loss.backward()
             optims.discriminator.step()
 
@@ -355,12 +355,13 @@ def match_loss(x_real, x_fake):
     stacked_fake_tensor = torch.stack(x_fake_tensors).to('cpu')
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
-    fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
-    stacked_fake_aligned = torch.stack(fake_aligned)
-    print("stacked_fake_aligned:", stacked_fake_aligned.shape)
+    if mtcnn.detect(stacked_fake_tensor)[1].dtype is np.dtype('float32'):
+        fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
+        stacked_fake_aligned = torch.stack(fake_aligned)
+        print("stacked_fake_aligned:", stacked_fake_aligned.shape)
 
-    fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
-    print('fake_embeddings:', fake_embeddings.shape)
+        fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
+        print('fake_embeddings:', fake_embeddings.shape)
 
 
     # real_aligned, prob = mtcnn(x_real, return_prob=True)
