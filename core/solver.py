@@ -333,12 +333,13 @@ def match_loss(x_real, x_fake):
     stacked_tensor = torch.stack(x_real_tensors).to('cpu')
     print("stacked_tensor:", stacked_tensor.shape)
 
-    real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
-    stacked_real_aligned = torch.stack(real_aligned)
-    print("stacked_real_aligned:", stacked_real_aligned.shape)
+    if mtcnn.detect(stacked_tensor)[1].dtype is np.dtype('float32'):
+        real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
+        stacked_real_aligned = torch.stack(real_aligned)
+        print("stacked_real_aligned:", stacked_real_aligned.shape)
 
-    embeddings = resnet(stacked_real_aligned).detach().cpu()
-    print('embeddings:', embeddings.shape)
+        embeddings = resnet(stacked_real_aligned).detach().cpu()
+        print('embeddings:', embeddings.shape)
 
     # fake
     print("x_fake_shape", x_fake.shape)
