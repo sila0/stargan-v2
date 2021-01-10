@@ -321,9 +321,11 @@ def match_loss(x_real, x_fake):
     print("x_real_shape", x_real.shape)
     
     # real
+    selected_real = False
     c = 0
+
     for x in x_real:
-        print(1)
+        # print(1)
         img = transforms.ToPILImage()(x)
         img.save('real'+str(c)+'.jpg')
         c = c + 1
@@ -333,20 +335,25 @@ def match_loss(x_real, x_fake):
     stacked_tensor = torch.stack(x_real_tensors).to('cpu')
     print("stacked_tensor:", stacked_tensor.shape)
 
+
     if mtcnn.detect(stacked_tensor)[1].dtype is np.dtype('float32'):
+        selected_real = True
         real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
         stacked_real_aligned = torch.stack(real_aligned)
         print("stacked_real_aligned:", stacked_real_aligned.shape)
 
         embeddings = resnet(stacked_real_aligned).detach().cpu()
         print('embeddings:', embeddings.shape)
+    else:
+        selected_real = False
 
     # fake
+    selected_fake = False
     print("x_fake_shape", x_fake.shape)
     
     c = 0
     for x in x_fake:
-        print(1)
+        # print(1)
         img = transforms.ToPILImage()(x)
         img.save('fake'+str(c)+'.jpg')
         c = c + 1
@@ -357,13 +364,24 @@ def match_loss(x_real, x_fake):
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
     if mtcnn.detect(stacked_fake_tensor)[1].dtype is np.dtype('float32'):
+        selected_fake = True
         fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
         stacked_fake_aligned = torch.stack(fake_aligned)
         print("stacked_fake_aligned:", stacked_fake_aligned.shape)
 
         fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
         print('fake_embeddings:', fake_embeddings.shape)
+    else:
+        selected_fake = False
 
+    # minus
+    print("selected_real:", selected_real)
+    print("selected_fake:", selected_fake)
+    
+    if selected_real and selected_fake:
+        print("match_loss:", torch.mean(torch.abs(embeddings - fake_embeddings)))
+    else:
+        print("match_loss:", 0)
 
     # real_aligned, prob = mtcnn(x_real, return_prob=True)
     # real_stacked = torch.stack(real_aligned)
