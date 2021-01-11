@@ -273,7 +273,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     # test
-    match_loss(x_real, x_fake)
+    # match_loss(x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
@@ -377,7 +377,7 @@ def match_loss(x_real, x_fake):
     # minus
     print("selected_real:", selected_real)
     print("selected_fake:", selected_fake)
-    
+
     if selected_real and selected_fake:
         print("match_loss:", torch.mean(torch.abs(embeddings - fake_embeddings)))
     else:
