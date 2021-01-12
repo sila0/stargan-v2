@@ -254,7 +254,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # test
-    match_loss(x_real, x_fake)
+    # match_loss(x_real, x_fake)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
