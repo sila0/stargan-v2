@@ -253,6 +253,9 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     out = nets.discriminator(x_fake, y_trg)
     loss_adv = adv_loss(out, 1)
 
+    # test
+    match_loss(x_real, x_fake)
+
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
     loss_sty = torch.mean(torch.abs(s_pred - s_trg))
@@ -271,9 +274,6 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     s_org = nets.style_encoder(x_real, y_org)
     x_rec = nets.generator(x_fake, s_org, masks=masks)
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
-
-    # test
-    # match_loss(x_real, x_fake)
 
     loss = loss_adv + args.lambda_sty * loss_sty \
         - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
