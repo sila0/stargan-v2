@@ -256,7 +256,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # test'
-    if x_refs in not None:
+    if x_refs is not None:
         masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
         s_ref = nets.style_encoder(x_ref, y_trg)
         x_fake_test = nets.generator(x_real, s_ref, masks=masks)
