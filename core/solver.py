@@ -169,9 +169,6 @@ class Solver(nn.Module):
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
 
-            # TEST
-            os.makedirs('TEST_sila', exist_ok=True)
-            utils.debug_image(nets, args, inputs=inputs_val, step=i+1)
 
             # generate images for debugging
             if (i+1) % args.sample_every == 0:
@@ -251,6 +248,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     if z_trgs is not None:
         s_trg = nets.mapping_network(z_trg, y_trg)
     else:
+        print('condition>> ref')
         s_trg = nets.style_encoder(x_ref, y_trg)
 
     x_fake = nets.generator(x_real, s_trg, masks=masks)
@@ -258,6 +256,11 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # test
+    a = 0
+    for x in x_fake:
+        a += 1
+        img = transforms.ToPILImage()(x)
+        img.save('test_na_ja'+str(a)+'.jpg')
     # match_loss(x_real, x_fake)
 
     # style reconstruction loss
@@ -268,7 +271,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     if z_trgs is not None:
         s_trg2 = nets.mapping_network(z_trg2, y_trg)
     else:
-        s_trg2 = nets.style_encoder(x_ref2, y_trg)
+        s_trg2 = nets.style_encoder(    2, y_trg)
     x_fake2 = nets.generator(x_real, s_trg2, masks=masks)
     x_fake2 = x_fake2.detach()
     loss_ds = torch.mean(torch.abs(x_fake - x_fake2))
@@ -310,6 +313,20 @@ def r1_reg(d_out, x_in):
     assert(grad_dout2.size() == x_in.size())
     reg = 0.5 * grad_dout2.view(batch_size, -1).sum(1).mean(0)
     return reg
+
+def get_fake(nets, x_src, x_ref, y_ref):
+    masks = nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
+    s_ref = nets.style_encoder(x_ref, y_ref)
+    s_ref_list = s_ref.unsqueeze(1).repeat(1, N, 1)
+    x_concat = [x_src_with_wb]
+    for i, s_ref in enumerate(s_ref_list):
+        x_fake = nets.generator(x_src, s_ref, masks=masks)
+        x_fake_with_ref = torch.cat([x_ref[i:i+1], x_fake], dim=0)
+        x_concat += [x_fake_with_ref]
+
+    x_concat = torch.cat(x_concat, dim=0)
+    save_image(x_concat, N+1, filename)
+    del x_concat
 
 def match_loss(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
