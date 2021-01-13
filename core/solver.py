@@ -256,16 +256,17 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # test'
-    masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
-    s_ref = nets.style_encoder(x_ref, y_trg)
-    x_fake_test = nets.generator(x_real, s_ref, masks=masks)
+    if x_refs in not None:
+        masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
+        s_ref = nets.style_encoder(x_ref, y_trg)
+        x_fake_test = nets.generator(x_real, s_ref, masks=masks)
 
-    a = 0
-    print('x_fake_test.shape: ',x_fake_test.shape)
-    for x in x_fake_test:
-        a += 1
-        img = transforms.ToPILImage()(x)
-        img.save('test_na_ja'+str(a)+'.jpg')
+        a = 0
+        print('x_fake_test.shape: ',x_fake_test.shape)
+        for x in x_fake_test:
+            a += 1
+            img = transforms.ToPILImage()(x)
+            img.save('test_na_ja'+str(a)+'.jpg')
     # match_loss(x_real, x_fake)
 
     # style reconstruction loss
