@@ -169,6 +169,10 @@ class Solver(nn.Module):
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
 
+            # TEST
+            os.makedirs('TEST_sila', exist_ok=True)
+            utils.debug_image(nets, args, inputs=inputs_val, step=i+1)
+
             # generate images for debugging
             if (i+1) % args.sample_every == 0:
                 os.makedirs(args.sample_dir, exist_ok=True)
@@ -358,7 +362,7 @@ def match_loss(x_real, x_fake):
         img.save('fake'+str(c)+'.jpg')
         c = c + 1
         x_fake_tensors.append(tensor(img))
-    print('x_real_tensors:', len(x_fake_tensors))
+    # print('x_real_tensors:', len(x_fake_tensors))
     
     stacked_fake_tensor = torch.stack(x_fake_tensors).to('cpu')
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
