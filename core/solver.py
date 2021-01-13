@@ -248,7 +248,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     if z_trgs is not None:
         s_trg = nets.mapping_network(z_trg, y_trg)
     else:
-        print('condition>> ref')
+        # print('condition>> ref')
         s_trg = nets.style_encoder(x_ref, y_trg)
 
     x_fake = nets.generator(x_real, s_trg, masks=masks)
