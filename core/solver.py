@@ -255,22 +255,22 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     out = nets.discriminator(x_fake, y_trg)
     loss_adv = adv_loss(out, 1)
 
-    # test'
-    if x_refs is not None:
-        masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
-        s_ref = nets.style_encoder(x_ref, y_trg)
-        x_fake_test = nets.generator(x_real, s_ref, masks=masks)
-        out = (x_fake_test + 1) / 2
-        out = out.clamp_(0, 1)
+    # # test'
+    # if x_refs is not None:
+    #     masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
+    #     s_ref = nets.style_encoder(x_ref, y_trg)
+    #     x_fake_test = nets.generator(x_real, s_ref, masks=masks)
+    #     out = (x_fake_test + 1) / 2
+    #     out = out.clamp_(0, 1)
 
-        a = 0
-        print('x_fake_test.shape: ',x_fake_test.shape)
-        print('out.shape: ',out.shape)
+    #     a = 0
+    #     print('x_fake_test.shape: ',x_fake_test.shape)
+    #     print('out.shape: ',out.shape)
 
-        for x in out:
-            a += 1
-            img = transforms.ToPILImage()(x)
-            img.save('x_fake_test'+str(a)+'.jpg')
+    #     for x in out:
+    #         a += 1
+    #         img = transforms.ToPILImage()(x)
+    #         img.save('x_fake_test'+str(a)+'.jpg')
     # match_loss(x_real, x_fake)
 
     # style reconstruction loss
