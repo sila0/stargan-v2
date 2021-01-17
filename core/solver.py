@@ -271,7 +271,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     #         a += 1
     #         img = transforms.ToPILImage()(x)
     #         img.save('x_fake_test'+str(a)+'.jpg')
-    # match_loss(x_real, x_fake)
+    match_loss(x_real, x_fake)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
@@ -381,6 +381,9 @@ def match_loss(x_real, x_fake):
     # fake
     selected_fake = False
     print("x_fake_shape", x_fake.shape)
+
+    x_fake = denormalize(x_fake)
+    print("x_fake_shape", x_fake.shape)
     
     c = 0
     for x in x_fake:
@@ -413,6 +416,10 @@ def match_loss(x_real, x_fake):
         print("match_loss:", torch.mean(torch.abs(embeddings - fake_embeddings)))
     else:
         print("match_loss:", 0)
+
+def denormalize(x):
+    out = (x + 1) / 2
+    return out.clamp_(0, 1)
 
     # real_aligned, prob = mtcnn(x_real, return_prob=True)
     # real_stacked = torch.stack(real_aligned)
