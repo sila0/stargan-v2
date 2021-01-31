@@ -353,18 +353,37 @@ def match_loss(x_real, x_fake):
     
     # real
     selected_real = False
+    
+    # fake
+    selected_fake = False
+    print("x_fake_shape", x_fake.shape)
+
+    x_fake = denormalize(x_fake)
+    print("de_x_fake_shape", x_fake.shape)
+
     c = 0
 
     for x in x_real:
-        # print(1)
+        # save real(1)
         img = transforms.ToPILImage()(x)
         img.save('real'+str(c)+'.jpg')
-        c = c + 1
         x_real_tensors.append(tensor(img))
+
+        # save fake(1)
+        img = transforms.ToPILImage()(x)
+        img.save('fake'+str(c)+'.jpg')
+        c = c + 1
+        x_fake_tensors.append(tensor(img))
+
     print('x_real_tensors:', len(x_real_tensors))
     
+    # stack real
     stacked_tensor = torch.stack(x_real_tensors).to('cpu')
     print("stacked_tensor:", stacked_tensor.shape)
+
+    # stack fake
+    stacked_fake_tensor = torch.stack(x_fake_tensors).to('cpu')
+    print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
 
     if mtcnn.detect(stacked_tensor)[1].dtype is np.dtype('float32'):
@@ -375,27 +394,26 @@ def match_loss(x_real, x_fake):
 
         embeddings = resnet(stacked_real_aligned).detach().cpu()
         print('embeddings:', embeddings.shape)
+
+        # rec fake
+        fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
+        stacked_fake_aligned = torch.stack(fake_aligned)
+        print("stacked_fake_aligned:", stacked_fake_aligned.shape)
+
+        fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
+        print('fake_embeddings:', fake_embeddings.shape)
+
     else:
         selected_real = False
 
-    # fake
-    selected_fake = False
-    print("x_fake_shape", x_fake.shape)
 
-    x_fake = denormalize(x_fake)
-    print("x_fake_shape", x_fake.shape)
     
     c = 0
     for x in x_fake:
-        # print(1)
-        img = transforms.ToPILImage()(x)
-        img.save('fake'+str(c)+'.jpg')
-        c = c + 1
-        x_fake_tensors.append(tensor(img))
+ 
     # print('x_real_tensors:', len(x_fake_tensors))
     
-    stacked_fake_tensor = torch.stack(x_fake_tensors).to('cpu')
-    print("stacked_fake_tensor:", stacked_fake_tensor.shape)
+
 
     if mtcnn.detect(stacked_fake_tensor)[1].dtype is np.dtype('float32'):
         selected_fake = True
