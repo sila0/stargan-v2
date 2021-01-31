@@ -387,8 +387,8 @@ def match_loss(x_real, x_fake):
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
     face = mtcnn.detect(stacked_tensor)
-    print('face:', face.shape)
-    
+    print('face:', face)
+
     if mtcnn.detect(stacked_tensor)[1].dtype is np.dtype('float32'):
         selected_real = True
         real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
