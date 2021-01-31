@@ -271,7 +271,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     #         a += 1
     #         img = transforms.ToPILImage()(x)
     #         img.save('x_fake_test'+str(a)+'.jpg')
-    match_loss(x_real, x_fake, x_refs)
+    match_loss(x_real, x_fake, s_trg)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
@@ -338,7 +338,7 @@ def get_fake(nets, x_src, x_ref, y_ref):
     save_image(x_concat, N+1, filename)
     del x_concat
 
-def match_loss(x_real, x_fake, x_refs):
+def match_loss(x_real, x_fake, s_trg):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
@@ -351,14 +351,9 @@ def match_loss(x_real, x_fake, x_refs):
     # test loss
     print("x_real_shape", x_real.shape)
 
-    # ref
-    if x_refs is not None:
-        print('x_ref is not None')
-        x_ref, x_ref2 = x_refs
-        print("x_ref_shape", x_ref.shape)
-    else:
-        print('x_ref is None')
-    
+    # s_trg
+    print("x_ref_shape", s_trg.shape)
+
     # real
     selected_real = False
     
