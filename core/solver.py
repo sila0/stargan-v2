@@ -387,7 +387,8 @@ def match_loss(x_real, x_fake):
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
     detected = mtcnn.detect(stacked_tensor)
-    print('face:', detected[0].shape)
+    out = crop_resize(x_real, detected[0], 160)
+    print('face:', out)
 
     if detected(stacked_tensor)[1].dtype is np.dtype('float32'):
         selected_real = True
@@ -453,3 +454,20 @@ def denormalize(x):
 
     # print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
     
+def crop_resize(img, box, image_size):
+    if isinstance(img, np.ndarray):
+        img = img[box[1]:box[3], box[0]:box[2]]
+        out = cv2.resize(
+            img,
+            (image_size, image_size),
+            interpolation=cv2.INTER_AREA
+        ).copy()
+    elif isinstance(img, torch.Tensor):
+        img = img[box[1]:box[3], box[0]:box[2]]
+        out = imresample(
+            img.permute(2, 0, 1).unsqueeze(0).float(),
+            (image_size, image_size)
+        ).byte().squeeze(0).permute(1, 2, 0)
+    else:
+        out = img.crop(box).copy().resize((image_size, image_size), Image.BILINEAR)
+    return out
