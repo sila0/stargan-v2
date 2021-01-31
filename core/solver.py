@@ -393,16 +393,16 @@ def match_loss(x_real, x_fake):
         stacked_real_aligned = torch.stack(real_aligned)
         print("stacked_real_aligned:", stacked_real_aligned.shape)
 
-        embeddings = resnet(stacked_real_aligned).detach().cpu()
-        print('embeddings:', embeddings.shape)
+        real_embeddings = resnet(stacked_real_aligned).detach().cpu()
+        print('real_embeddings:', real_embeddings.shape)
 
         # rec fake
-        fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
-        stacked_fake_aligned = torch.stack(fake_aligned)
-        print("stacked_fake_aligned:", stacked_fake_aligned.shape)
+        # fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
+        # stacked_fake_aligned = torch.stack(fake_aligned)
+        # print("stacked_fake_aligned:", stacked_fake_aligned.shape)
 
-        fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
-        print('fake_embeddings:', fake_embeddings.shape)
+        # fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
+        # print('fake_embeddings:', fake_embeddings.shape)
 
     else:
         selected_real = False
@@ -410,27 +410,28 @@ def match_loss(x_real, x_fake):
 
     
     c = 0
-    for x in x_fake:
+    # for x in x_fake:
  
     # print('x_real_tensors:', len(x_fake_tensors))
-    
-        if mtcnn.detect(stacked_fake_tensor)[1].dtype is np.dtype('float32'):
-            selected_fake = True
-            fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
-            stacked_fake_aligned = torch.stack(fake_aligned)
-            print("stacked_fake_aligned:", stacked_fake_aligned.shape)
 
-            fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
-            print('fake_embeddings:', fake_embeddings.shape)
-        else:
-            selected_fake = False
+    if mtcnn.detect(stacked_fake_tensor)[1].dtype is np.dtype('float32'):
+        selected_fake = True
+        fake_aligned, prob = mtcnn(stacked_fake_tensor, return_prob=True)
+        stacked_fake_aligned = torch.stack(fake_aligned)
+        print("stacked_fake_aligned:", stacked_fake_aligned.shape)
+
+        fake_embeddings = resnet(stacked_fake_aligned).detach().cpu()
+        print('fake_embeddings:', fake_embeddings.shape)
+    else:
+        selected_fake = False
 
     # minus
     print("selected_real:", selected_real)
     print("selected_fake:", selected_fake)
 
     if selected_real and selected_fake:
-        print("match_loss:", torch.mean(torch.abs(embeddings - fake_embeddings)))
+        # print("match_loss:", torch.mean(torch.abs(real_embeddings - fake_embeddings)))
+        print("match_loss:", torch.linalg.norm(real_embeddings - fake_embeddings, 1, -1).mean())
     else:
         print("match_loss:", 0)
     
