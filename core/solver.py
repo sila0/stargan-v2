@@ -369,13 +369,16 @@ def match_loss(x_real, x_fake):
         img.save('real'+str(c)+'.jpg')
         x_real_tensors.append(tensor(img))
 
+    print('x_real_tensors:', len(x_real_tensors))
+    
+    for x in x_fake:
         # save fake(1)
         img = transforms.ToPILImage()(x)
         img.save('fake'+str(c)+'.jpg')
         c = c + 1
         x_fake_tensors.append(tensor(img))
 
-    print('x_real_tensors:', len(x_real_tensors))
+    
     
     # stack real
     stacked_tensor = torch.stack(x_real_tensors).to('cpu')
