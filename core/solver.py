@@ -352,7 +352,12 @@ def match_loss(x_real, x_fake, x_refs):
     print("x_real_shape", x_real.shape)
 
     # ref
-    print("x_ref_shape", x_refs.shape)
+    if x_refs is not None:
+        print('x_ref is not None')
+        x_ref, x_ref2 = x_refs
+        print("x_ref_shape", x_ref.shape)
+    else:
+        print('x_ref is None')
     
     # real
     selected_real = False
