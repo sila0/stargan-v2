@@ -378,7 +378,7 @@ def match_loss(x_real, x_fake):
         c = c + 1
         x_fake_tensors.append(tensor(img))
 
-    assert 1 != 0
+    assert 1 == 0
     
     # stack real
     stacked_tensor = torch.stack(x_real_tensors).to('cpu')
