@@ -442,8 +442,6 @@ def match_loss(x_real, x_fake, x_refs):
     else:
         print("match_loss:", 0)
 
-    assert 1 == 0
-
 def denormalize(x):
     out = (x + 1) / 2
     return out.clamp_(0, 1)
