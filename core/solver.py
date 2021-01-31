@@ -338,7 +338,7 @@ def get_fake(nets, x_src, x_ref, y_ref):
     save_image(x_concat, N+1, filename)
     del x_concat
 
-def match_loss(x_real, x_fake, s_trg):
+def match_loss(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
@@ -350,9 +350,6 @@ def match_loss(x_real, x_fake, s_trg):
 
     # test loss
     print("x_real_shape", x_real.shape)
-
-    # s_trg
-    print("x_ref_shape", s_trg.shape)
 
     # real
     selected_real = False
@@ -436,6 +433,8 @@ def match_loss(x_real, x_fake, s_trg):
         print("match_loss:", torch.mean(torch.abs(embeddings - fake_embeddings)))
     else:
         print("match_loss:", 0)
+    
+    assert 1 == 0
 
 def denormalize(x):
     out = (x + 1) / 2
