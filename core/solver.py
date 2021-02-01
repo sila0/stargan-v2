@@ -328,23 +328,14 @@ def get_fake(nets, x_src, x_ref, y_ref):
     del x_concat
 
 def match_loss(x_real, x_fake):
-    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
+    # denormalize img
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
-    x_real_tensors = []
-    x_fake_tensors = []
 
     # test loss
     # print("x_real_shape", x_real.shape)
-
-    # real
-    selected_real = False
-    
-    # fake
-    selected_fake = False
-    # print("x_fake_shape", x_fake.shape)
 
     # crop and resize
     stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)

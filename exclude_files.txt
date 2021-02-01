@@ -1,0 +1,8 @@
+/content/stargan-v2/data/celeba_hq/train/female/039459.jpg
+/content/stargan-v2/data/celeba_hq/train/female/130386.jpg
+/content/stargan-v2/data/celeba_hq/train/female/129614.jpg
+/content/stargan-v2/data/celeba_hq/train/female/054996.jpg
+/content/stargan-v2/data/celeba_hq/train/female/107297.jpg
+/content/stargan-v2/data/celeba_hq/train/male/124951.jpg
+/content/stargan-v2/data/celeba_hq/train/male/012671.jpg
+/content/stargan-v2/data/celeba_hq/train/male/164481.jpg
