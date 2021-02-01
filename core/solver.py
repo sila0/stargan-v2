@@ -468,6 +468,7 @@ def crop(x_real, mtcnn):
     detected = mtcnn.detect(stacked_real_tensor)
 
     for im, box in zip(x_real_images, detected[0]):
-        im.crop(box)
+        print(im, box)
+        im = im.crop(box)
         im.save('crop'+str(c)+'.jpg')
         c += 1
