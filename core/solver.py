@@ -467,7 +467,7 @@ def crop(x_real, mtcnn):
     stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
     detected = mtcnn.detect(stacked_real_tensor)
 
-    for x, box in zip(x_real_images, detected[0])
+    for x, box in zip(x_real_images, detected[0]):
         im = transforms.ToPILImage()(x)
         im.crop(box)
         img.save('crop'+str(c)+'.jpg')
