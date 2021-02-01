@@ -468,7 +468,7 @@ def crop(x_real, x_fake):
         x_tensors.append(tensor(r_im))
 
         f_im = transforms.ToPILImage()(f)
-        x_fake_images.append(r_im)
+        x_fake_images.append(f_im)
     
     stacked_real_tensor = torch.stack(x_tensors).to('cpu')
     detected = mtcnn.detect(stacked_real_tensor)
