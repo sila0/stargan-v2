@@ -365,7 +365,19 @@ def match_loss(x_real, x_fake):
     # x_fake = denormalize(x_fake)
     # print("de_x_fake_shape", x_fake.shape)
 
-    crop(x_real, x_fake)
+    # crop and resize
+    stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
+
+    # standardization
+    stacked_real_tensor = fixed_image_standardization(stacked_real_tensor)
+    stacked_fake_tensor = fixed_image_standardization(stacked_fake_tensor)
+
+    # vector
+    vector_real_x = resnet(stacked_real_tensor).detach().cpu()
+    vector_fake_x = resnet(stacked_fake_tensor).detach().cpu()
+
+    # print
+    print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
     c = 0
 
@@ -455,29 +467,37 @@ def fixed_image_standardization(image_tensor):
     processed_tensor = (image_tensor - 127.5) / 128.0
     return processed_tensor
 
-def crop(x_real, x_fake):
+def crop_resize(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     x_real_images = []
     x_fake_images = []
-    x_tensors = []
+    x_real_tensors = []
+    x_fake_tensors = []
     c = 0
 
     for r, f in zip(x_real, x_fake):
         r_im = transforms.ToPILImage()(r)
         x_real_images.append(r_im)
-        x_tensors.append(tensor(r_im))
+        x_real_tensors.append(tensor(r_im))
 
         f_im = transforms.ToPILImage()(f)
         x_fake_images.append(f_im)
     
-    stacked_real_tensor = torch.stack(x_tensors).to('cpu')
+    stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
     detected = mtcnn.detect(stacked_real_tensor)
 
+    x_real_tensors.clear()
+    x_fake_tensors.clear()
     for r_im, f_im, box in zip(x_real_images, x_fake_images, detected[0]):
         r_im = r_im.crop(box[0])
+        r_im = transforms.Resize((160,160), interpolation=2)(r_im)
         r_im.save('r_crop'+str(c)+'.jpg')
+        x_real_tensors.append(FF.to_tensor(np.float32(r_im)))
 
         f_im = f_im.crop(box[0])
+        f_im = transforms.Resize((160,160), interpolation=2)(f_im)
         f_im.save('f_crop'+str(c)+'.jpg')
+        x_fake_tensors.append(FF.to_tensor(np.float32(f_im)))
         c += 1
 
+    return torch.stack(x_real_tensors).to('cpu'), torch.stack(x_fake_tensors).to('cpu')
