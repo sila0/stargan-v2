@@ -337,14 +337,14 @@ def match_loss(x_real, x_fake):
     x_fake_tensors = []
 
     # test loss
-    print("x_real_shape", x_real.shape)
+    # print("x_real_shape", x_real.shape)
 
     # real
     selected_real = False
     
     # fake
     selected_fake = False
-    print("x_fake_shape", x_fake.shape)
+    # print("x_fake_shape", x_fake.shape)
 
     # crop and resize
     stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
@@ -358,10 +358,10 @@ def match_loss(x_real, x_fake):
     vector_fake_x = resnet(stacked_fake_tensor).detach().cpu()
 
     # print
-    print('vector size:', vector_real_x.shape, vector_fake_x.shape)
+    # print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
     loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
-    print("match_loss:", loss)
+    # print("match_loss:", loss)
 
     return loss
 
