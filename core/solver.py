@@ -257,23 +257,8 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     out = nets.discriminator(x_fake, y_trg)
     loss_adv = adv_loss(out, 1)
 
-    # # test'
-    # if x_refs is not None:
-    #     masks = nets.fan.get_heatmap(x_real) if args.w_hpf > 0 else None
-    #     s_ref = nets.style_encoder(x_ref, y_trg)
-    #     x_fake_test = nets.generator(x_real, s_ref, masks=masks)
-    #     out = (x_fake_test + 1) / 2
-    #     out = out.clamp_(0, 1)
-
-    #     a = 0
-    #     print('x_fake_test.shape: ',x_fake_test.shape)
-    #     print('out.shape: ',out.shape)
-
-    #     for x in out:
-    #         a += 1
-    #         img = transforms.ToPILImage()(x)
-    #         img.save('x_fake_test'+str(a)+'.jpg')
-    match_loss(x_real, x_fake)
+    # match loss
+    loss_m = match_loss(x_real, x_fake)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
@@ -295,11 +280,13 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     loss = loss_adv + args.lambda_sty * loss_sty \
-        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc
+        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc \
+        + loss_m
     return loss, Munch(adv=loss_adv.item(),
                        sty=loss_sty.item(),
                        ds=loss_ds.item(),
-                       cyc=loss_cyc.item())
+                       cyc=loss_cyc.item(),
+                       m=loss_m.item())
 
 
 def moving_average(model, model_test, beta=0.999):
@@ -373,7 +360,10 @@ def match_loss(x_real, x_fake):
     # print
     print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
-    print("match_loss:", torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean())
+    loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
+    print("match_loss:", loss)
+
+    return loss
 
 
 
