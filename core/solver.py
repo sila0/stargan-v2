@@ -365,7 +365,7 @@ def match_loss(x_real, x_fake):
     # x_fake = denormalize(x_fake)
     # print("de_x_fake_shape", x_fake.shape)
 
-    crop(x_real)
+    crop(x_real, x_fake)
 
     c = 0
 
