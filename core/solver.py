@@ -17,6 +17,8 @@ from munch import Munch
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torchvision.transforms import functional as FF
+
 
 from core.model import build_model
 from core.checkpoint import CheckpointIO
@@ -343,10 +345,15 @@ def match_loss(x_real, x_fake):
     resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
     # invert
-    x_real = (x_real + 1) / 2
-    x_real = x_real.clamp_(0, 1)
+    # x_real = (x_real + 1) / 2
+    # x_real = x_real.clamp_(0, 1)
+    x_real = denormalize(x_real)
+    x_fake = denormalize(x_fake)
     x_real_tensors = []
     x_fake_tensors = []
+
+    detected = mtcnn.detect(x_real)
+    print('detected:', detected)
 
     # test loss
     print("x_real_shape", x_real.shape)
@@ -358,8 +365,8 @@ def match_loss(x_real, x_fake):
     selected_fake = False
     print("x_fake_shape", x_fake.shape)
 
-    x_fake = denormalize(x_fake)
-    print("de_x_fake_shape", x_fake.shape)
+    # x_fake = denormalize(x_fake)
+    # print("de_x_fake_shape", x_fake.shape)
 
     c = 0
 
@@ -387,7 +394,7 @@ def match_loss(x_real, x_fake):
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
     detected = mtcnn.detect(stacked_tensor)
-    out = crop_resize(x_real, detected[0], 160)
+    out = crop(x_real, detected)
     print('face:', out)
 
     if detected(stacked_tensor)[1].dtype is np.dtype('float32'):
@@ -440,34 +447,18 @@ def match_loss(x_real, x_fake):
     
     assert 1 == 0
 
-def denormalize(x):
-    out = (x + 1) / 2
+def denormalize(image_tensor):
+    out = (image_tensor + 1) / 2
     return out.clamp_(0, 1)
 
-    # real_aligned, prob = mtcnn(x_real, return_prob=True)
-    # real_stacked = torch.stack(real_aligned)
-    # real_embeddings = resnet(real_stacked).detach().cpu()
+def fixed_image_standardization(image_tensor):
+    processed_tensor = (image_tensor - 127.5) / 128.0
+    return processed_tensor
 
-    # fake_aligned, prob = mtcnn(x_fake, return_prob=True)
-    # fake_stacked = torch.stack(fake_aligned)
-    # fake_embeddings = resnet(fake_stacked).detach().cpu()
-
-    # print('real/fake embedding:', real_embeddings.shape, fake_embeddings.shape)
-    
-def crop_resize(img, box, image_size):
-    if isinstance(img, np.ndarray):
-        img = img[box[1]:box[3], box[0]:box[2]]
-        out = cv2.resize(
-            img,
-            (image_size, image_size),
-            interpolation=cv2.INTER_AREA
-        ).copy()
-    elif isinstance(img, torch.Tensor):
-        img = img[box[1]:box[3], box[0]:box[2]]
-        out = imresample(
-            img.permute(2, 0, 1).unsqueeze(0).float(),
-            (image_size, image_size)
-        ).byte().squeeze(0).permute(1, 2, 0)
-    else:
-        out = img.crop(box).copy().resize((image_size, image_size), Image.BILINEAR)
-    return out
+def crop(image_tensor, boxes):
+    c = 0
+    for x, box in zip(x_real, boxes):
+        im = transforms.ToPILImage()(x)
+        im.crop(box)
+        img.save('crop'+str(c)+'.jpg')
+        c += 1
