@@ -365,7 +365,7 @@ def match_loss(x_real, x_fake):
     # x_fake = denormalize(x_fake)
     # print("de_x_fake_shape", x_fake.shape)
 
-    crop(x_real, mtcnn)
+    crop(x_real)
 
     c = 0
 
@@ -454,7 +454,8 @@ def fixed_image_standardization(image_tensor):
     processed_tensor = (image_tensor - 127.5) / 128.0
     return processed_tensor
 
-def crop(x_real, mtcnn):
+def crop(x_real):
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     x_real_images = []
     x_real_tensors = []
     c = 0
