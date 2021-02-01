@@ -397,7 +397,7 @@ def match_loss(x_real, x_fake):
     # out = crop(x_real, detected)
     # print('face:', out)
 
-    if detected(stacked_tensor)[1].dtype is np.dtype('float32'):
+    if mtcnn.detect(stacked_tensor)[1].dtype is np.dtype('float32'):
         selected_real = True
         real_aligned, prob = mtcnn(stacked_tensor, return_prob=True)
         stacked_real_aligned = torch.stack(real_aligned)
