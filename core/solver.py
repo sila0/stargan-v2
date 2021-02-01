@@ -470,5 +470,5 @@ def crop(x_real, mtcnn):
     for x, box in zip(x_real_images, detected[0]):
         im = transforms.ToPILImage()(x)
         im.crop(box)
-        img.save('crop'+str(c)+'.jpg')
+        im.save('crop'+str(c)+'.jpg')
         c += 1
