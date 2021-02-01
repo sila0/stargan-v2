@@ -478,6 +478,6 @@ def crop(x_real, x_fake):
         r_im.save('r_crop'+str(c)+'.jpg')
 
         f_im = f_im.crop(box[0])
-        r_im.save('f_crop'+str(c)+'.jpg')
+        f_im.save('f_crop'+str(c)+'.jpg')
         c += 1
 
