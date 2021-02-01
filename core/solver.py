@@ -469,6 +469,6 @@ def crop(x_real, mtcnn):
 
     for im, box in zip(x_real_images, detected[0]):
         print(im, box)
-        im = im.crop(box)
+        im = im.crop(box[0])
         im.save('crop'+str(c)+'.jpg')
         c += 1
