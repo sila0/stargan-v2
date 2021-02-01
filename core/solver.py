@@ -393,8 +393,9 @@ def match_loss(x_real, x_fake):
     print("stacked_fake_tensor:", stacked_fake_tensor.shape)
 
     detected = mtcnn.detect(stacked_tensor)
-    out = crop(x_real, detected)
-    print('face:', out)
+
+    # out = crop(x_real, detected)
+    # print('face:', out)
 
     if detected(stacked_tensor)[1].dtype is np.dtype('float32'):
         selected_real = True
@@ -454,22 +455,29 @@ def fixed_image_standardization(image_tensor):
     processed_tensor = (image_tensor - 127.5) / 128.0
     return processed_tensor
 
-def crop(x_real):
+def crop(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
     x_real_images = []
-    x_real_tensors = []
+    x_fake_images = []
+    x_tensors = []
     c = 0
 
-    for x in x_real:
-        im = transforms.ToPILImage()(x)
-        x_real_images.append(im)
-        x_real_tensors.append(tensor(im))
+    for r, f in zip(x_real, x_fake):
+        r_im = transforms.ToPILImage()(r)
+        x_real_images.append(r_im)
+        x_tensors.append(tensor(r_im))
+
+        f_im = transforms.ToPILImage()(f)
+        x_fake_images.append(r_im)
     
-    stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
+    stacked_real_tensor = torch.stack(x_tensors).to('cpu')
     detected = mtcnn.detect(stacked_real_tensor)
 
-    for im, box in zip(x_real_images, detected[0]):
-        print(im, box)
-        im = im.crop(box[0])
-        im.save('crop'+str(c)+'.jpg')
+    for r_im, f_im, box in zip(x_real_images, x_fake_images, detected[0]):
+        r_im = r_im.crop(box[0])
+        r_im.save('r_crop'+str(c)+'.jpg')
+
+        f_im = f_im.crop(box[0])
+        r_im.save('f_crop'+str(c)+'.jpg')
         c += 1
+
