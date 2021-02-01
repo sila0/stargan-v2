@@ -352,9 +352,6 @@ def match_loss(x_real, x_fake):
     x_real_tensors = []
     x_fake_tensors = []
 
-    detected = mtcnn.detect(x_real)
-    print('detected:', detected)
-
     # test loss
     print("x_real_shape", x_real.shape)
 
@@ -367,6 +364,8 @@ def match_loss(x_real, x_fake):
 
     # x_fake = denormalize(x_fake)
     # print("de_x_fake_shape", x_fake.shape)
+
+    crop(x_real, mtcnn)
 
     c = 0
 
@@ -455,9 +454,20 @@ def fixed_image_standardization(image_tensor):
     processed_tensor = (image_tensor - 127.5) / 128.0
     return processed_tensor
 
-def crop(image_tensor, boxes):
+def crop(x_real, mtcnn):
+    x_real_images = []
+    x_real_tensors = []
     c = 0
-    for x, box in zip(x_real, boxes):
+
+    for x in x_real:
+        im = transforms.ToPILImage()(x)
+        x_real_images.append(im)
+        x_real_tensors.append(tensor(img))
+    
+    stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
+    detected = mtcnn.detect(stacked_real_tensor)
+
+    for x, box in zip(x_real_images, detected[0])
         im = transforms.ToPILImage()(x)
         im.crop(box)
         img.save('crop'+str(c)+'.jpg')
