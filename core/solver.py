@@ -388,7 +388,7 @@ def crop_resize(x_real, x_fake):
     x_real_tensors.clear()
     x_fake_tensors.clear()
     for r_im, f_im, box in zip(x_real_images, x_fake_images, detected[0]):
-        if box[0] is not None:
+        if box is not None:
             r_im = r_im.crop(box[0])
             r_im = transforms.Resize((160,160), interpolation=2)(r_im)
             r_im.save('r_crop'+str(c)+'.jpg')
