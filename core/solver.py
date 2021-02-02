@@ -388,15 +388,16 @@ def crop_resize(x_real, x_fake):
     x_real_tensors.clear()
     x_fake_tensors.clear()
     for r_im, f_im, box in zip(x_real_images, x_fake_images, detected[0]):
-        r_im = r_im.crop(box[0])
-        r_im = transforms.Resize((160,160), interpolation=2)(r_im)
-        r_im.save('r_crop'+str(c)+'.jpg')
-        x_real_tensors.append(FF.to_tensor(np.float32(r_im)))
+        if box[0] is not None:
+            r_im = r_im.crop(box[0])
+            r_im = transforms.Resize((160,160), interpolation=2)(r_im)
+            r_im.save('r_crop'+str(c)+'.jpg')
+            x_real_tensors.append(FF.to_tensor(np.float32(r_im)))
 
-        f_im = f_im.crop(box[0])
-        f_im = transforms.Resize((160,160), interpolation=2)(f_im)
-        f_im.save('f_crop'+str(c)+'.jpg')
-        x_fake_tensors.append(FF.to_tensor(np.float32(f_im)))
-        c += 1
+            f_im = f_im.crop(box[0])
+            f_im = transforms.Resize((160,160), interpolation=2)(f_im)
+            f_im.save('f_crop'+str(c)+'.jpg')
+            x_fake_tensors.append(FF.to_tensor(np.float32(f_im)))
+            c += 1
 
     return torch.stack(x_real_tensors).to('cpu'), torch.stack(x_fake_tensors).to('cpu')
