@@ -351,12 +351,11 @@ def match_loss(x_real, x_fake):
     # print
     # print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
-    loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
+    # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
+    loss = torch.linalg.norm(vector_real_x - vector_fake_x).mean()
     # print("match_loss:", loss)
 
     return loss
-
-
 
 def denormalize(image_tensor):
     out = (image_tensor + 1) / 2
