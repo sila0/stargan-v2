@@ -336,8 +336,8 @@ def match_loss(matcher, x_real, x_fake):
 
     print('x_real:', x_real)
 
-    for im in x_real:
-        im = transforms.ToPILImage()(x_real) 
+    for x in x_real:
+        im = transforms.ToPILImage()(x) 
         ten = transforms.ToTensor()(im)
         print('x_real_tensor:', ten)
 
