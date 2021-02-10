@@ -339,6 +339,7 @@ def match_loss(matcher, x_real, x_fake):
 
     # detect face
     print('x_real/x_real_stack:', x_real.shape, torch.stack(x_real_array).shape)
+    print('x_real:', x_real)
     detected_faces = detect_face(x_real.to('cpu'))
     print('detected:', detected_faces)
 
