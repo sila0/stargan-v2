@@ -330,26 +330,25 @@ def match_loss(matcher, x_real, x_fake):
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
     # print(matcher(x_real))
 
+    for r, f in zip(x_real, x_fake):
+        r_im = transforms.ToPILImage()(r)
+        x_real_images.append(r_im)
+        x_real_tensors.append(tensor(r_im))
+
+        f_im = transforms.ToPILImage()(f)
+        x_fake_images.append(f_im)
+
     # denormalize img
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
 
-    print('x_real:', x_real)
-
-    for x in x_real:
-        im = transforms.ToPILImage()(x) 
-        ten = transforms.ToTensor()(im)
-        print('x_real_tensor:', ten)
-
     # detect face
-    stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
+    detected_faces = detect_face(x_real)
+    print('detected:', detected_faces)
 
-    # pil img
-    x_real_im = [transforms.ToPILImage()(r) for r in x_real]
-    x_fake_im = [transforms.ToPILImage()(r) for r in x_fake]
-    
-    x_real_tensor_stacked = torch.stack(x_real_tensors).to('cpu')
-
+    # ToPILImage
+    x_real_images = [transforms.ToPILImage()(x) for x in x_real]
+    x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
 
     # crop and resize
     stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
