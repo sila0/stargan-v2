@@ -340,7 +340,7 @@ def match_loss(matcher, x_real, x_fake):
     # detect face
     print('x_real/x_real_stack:', x_real.shape, torch.stack(teal_tensors).shape)
     print('x_real:', x_real)
-    detected_faces = detect_face(torch.stack(teal_tensors).to('cpu'))
+    detected_faces = detect_face(torch.stack(teal_tensors))
     print('detected:', detected_faces)
 
     # crop and resize
