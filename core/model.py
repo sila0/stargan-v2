@@ -289,7 +289,7 @@ def build_model(args):
     mapping_network_ema = copy.deepcopy(mapping_network)
     style_encoder_ema = copy.deepcopy(style_encoder)
     matcher = models.resnet50(pretrained=True)
-    for param in self.matcher.parameters():
+    for param in matcher.parameters():
         param.requires_grad = False
 
     nets = Munch(generator=generator,
