@@ -336,11 +336,11 @@ def match_loss(matcher, x_real, x_fake):
 
     print('x_real:', x_real)
 
-    im = transforms.ToPILImage()(x_real) 
+    for im in x_real:
+        im = transforms.ToPILImage()(x_real) 
+        ten = transforms.ToTensor()(im)
+        print('x_real_tensor:', ten)
 
-    ten = transforms.ToTensor()(im)
-    print('x_real_tensor:', ten)
-    
     # detect face
     stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
 
