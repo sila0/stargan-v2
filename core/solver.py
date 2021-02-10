@@ -283,7 +283,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     return loss, Munch(adv=loss_adv.item(),
                        sty=loss_sty.item(),
                        ds=loss_ds.item(),
-                       cyc=loss_cyc.item() #, m=loss_m.item())
+                       cyc=loss_cyc.item() )#, m=loss_m.item())
 
 
 def moving_average(model, model_test, beta=0.999):
