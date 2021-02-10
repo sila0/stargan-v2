@@ -332,13 +332,13 @@ def match_loss(matcher, x_real, x_fake):
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
 
-    # detect face
-    detected_faces = detect_face(x_real)
-    print('detected:', detected_faces)
-
     # ToPILImage
     x_real_images = [transforms.ToPILImage()(x) for x in x_real]
     x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
+
+    # detect face
+    detected_faces = detect_face(torch.stack(x_real_images))
+    print('detected:', detected_faces)
 
     # crop and resize
     stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
@@ -373,9 +373,9 @@ def fixed_image_standardization(image_tensor):
 def transformsToPILImage(tensor_image):
     return [transforms.ToPILImage()(r) for r in tensor_image]
 
-def detect_face(image_tensor_stack):
-    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
-    return mtcnn.detect(image_tensor_stack)
+def detect_face(image_stack):
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=False, device='cuda')
+    return mtcnn.detect(image_stack)
 
 def crop_resize(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
