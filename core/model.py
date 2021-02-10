@@ -17,6 +17,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torchvision import models
 from core.wing import FAN
 
 
@@ -287,11 +288,15 @@ def build_model(args):
     generator_ema = copy.deepcopy(generator)
     mapping_network_ema = copy.deepcopy(mapping_network)
     style_encoder_ema = copy.deepcopy(style_encoder)
+    matcher = models.resnet50(pretrained=True)
+    for param in self.matcher.parameters():
+        param.requires_grad = False
 
     nets = Munch(generator=generator,
                  mapping_network=mapping_network,
                  style_encoder=style_encoder,
-                 discriminator=discriminator)
+                 discriminator=discriminator,
+                 matcher=matcher)
     nets_ema = Munch(generator=generator_ema,
                      mapping_network=mapping_network_ema,
                      style_encoder=style_encoder_ema)

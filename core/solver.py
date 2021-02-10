@@ -171,7 +171,6 @@ class Solver(nn.Module):
                 log += ' '.join(['%s: [%.4f]' % (key, value) for key, value in all_losses.items()])
                 print(log)
 
-
             # generate images for debugging
             if (i+1) % args.sample_every == 0:
                 os.makedirs(args.sample_dir, exist_ok=True)
@@ -258,7 +257,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # match loss
-    loss_m = match_loss(x_real, x_fake)
+    # loss_m = match_loss(net, x_real, x_fake)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
@@ -280,13 +279,11 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     loss = loss_adv + args.lambda_sty * loss_sty \
-        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc \
-        + loss_m
+        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc # + loss_m
     return loss, Munch(adv=loss_adv.item(),
                        sty=loss_sty.item(),
                        ds=loss_ds.item(),
-                       cyc=loss_cyc.item(),
-                       m=loss_m.item())
+                       cyc=loss_cyc.item() #, m=loss_m.item())
 
 
 def moving_average(model, model_test, beta=0.999):
@@ -328,7 +325,8 @@ def get_fake(nets, x_src, x_ref, y_ref):
     del x_concat
 
 def match_loss(x_real, x_fake):
-    resnet = InceptionResnetV1(pretrained='vggface2').eval()
+    # resnet = InceptionResnetV1(pretrained='vggface2').eval()
+    resnet = models.resnet50(pretrained=True)
 
     # denormalize img
     x_real = denormalize(x_real)
