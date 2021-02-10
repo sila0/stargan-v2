@@ -335,10 +335,11 @@ def match_loss(matcher, x_real, x_fake):
     # ToPILImage
     x_real_images = [transforms.ToPILImage()(x) for x in x_real]
     x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
+    x_real_array = [x for x in x_real]
 
     # detect face
-    print('x_real/x_real_stack:', x_real.shape, torch.stack(x_real).shape)
-    detected_faces = detect_face(torch.stack(x_real))
+    print('x_real/x_real_stack:', x_real.shape, torch.stack(x_real_array).shape)
+    detected_faces = detect_face(torch.stack(x_real_array))
     print('detected:', detected_faces)
 
     # crop and resize
