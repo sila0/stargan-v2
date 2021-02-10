@@ -335,7 +335,7 @@ def match_loss(matcher, x_real, x_fake):
     # ToPILImage
     x_real_images = [transforms.ToPILImage()(x) for x in x_real]
     x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
-    teal_tensors = [tensor(x) for x in x_real]
+    teal_tensors = [tensor(x) for x in x_real_images]
 
     # detect face
     print('x_real/x_real_stack:', x_real.shape, torch.stack(teal_tensors).shape)
