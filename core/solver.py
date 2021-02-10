@@ -324,9 +324,9 @@ def get_fake(nets, x_src, x_ref, y_ref):
     save_image(x_concat, N+1, filename)
     del x_concat
 
-def match_loss(x_real, x_fake):
+def match_loss(nets, x_real, x_fake):
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
-    resnet = models.resnet50(pretrained=True)
+    print(nets.matcher(x_real))
 
     # denormalize img
     x_real = denormalize(x_real)
