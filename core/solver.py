@@ -257,7 +257,7 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_adv = adv_loss(out, 1)
 
     # match loss
-    # loss_m = match_loss(net, x_real, x_fake)
+    loss_m = match_loss(nets.matcher, x_real, x_fake)
 
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
@@ -324,9 +324,9 @@ def get_fake(nets, x_src, x_ref, y_ref):
     save_image(x_concat, N+1, filename)
     del x_concat
 
-def match_loss(nets, x_real, x_fake):
+def match_loss(matcher, x_real, x_fake):
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
-    print(nets.matcher(x_real))
+    print(matcher(x_real))
 
     # denormalize img
     x_real = denormalize(x_real)
