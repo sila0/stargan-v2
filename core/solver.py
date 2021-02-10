@@ -325,15 +325,31 @@ def get_fake(nets, x_src, x_ref, y_ref):
     del x_concat
 
 def match_loss(matcher, x_real, x_fake):
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
+
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
-    print(matcher(x_real))
+    # print(matcher(x_real))
 
     # denormalize img
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
 
-    # test loss
-    # print("x_real_shape", x_real.shape)
+    print('x_real:', x_real)
+
+    im = transforms.ToPILImage()(x_real) 
+
+    ten = transforms.ToTensor()(im)
+    print('x_real_tensor:', ten)
+    
+    # detect face
+    stacked_real_tensor = torch.stack(x_real_tensors).to('cpu')
+
+    # pil img
+    x_real_im = [transforms.ToPILImage()(r) for r in x_real]
+    x_fake_im = [transforms.ToPILImage()(r) for r in x_fake]
+    
+    x_real_tensor_stacked = torch.stack(x_real_tensors).to('cpu')
+
 
     # crop and resize
     stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
@@ -364,6 +380,13 @@ def denormalize(image_tensor):
 def fixed_image_standardization(image_tensor):
     processed_tensor = (image_tensor - 127.5) / 128.0
     return processed_tensor
+
+def transformsToPILImage(tensor_image):
+    return [transforms.ToPILImage()(r) for r in tensor_image]
+
+def detect_face(image_tensor_stack):
+    mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
+    return mtcnn.detect(stacked_real_tensor)
 
 def crop_resize(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
