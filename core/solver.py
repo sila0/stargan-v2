@@ -337,12 +337,7 @@ def match_loss(matcher, x_real, x_fake):
     x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
 
     # detect face
-    print('x_real_images:', len(x_real_images))
-    img_stacked = torch.stack(x_real_images)
-
-    print('img_stacked:', img_stacked.shape)
-    
-    detected_faces = detect_face()
+    detected_faces = detect_face(x_real)
     print('detected:', detected_faces)
 
     # crop and resize
@@ -378,9 +373,9 @@ def fixed_image_standardization(image_tensor):
 def transformsToPILImage(tensor_image):
     return [transforms.ToPILImage()(r) for r in tensor_image]
 
-def detect_face(image_stack):
+def detect_face(tensor_image_stack):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=False, device='cuda')
-    return mtcnn.detect(image_stack)
+    return mtcnn.detect(tensor_image_stack)
 
 def crop_resize(x_real, x_fake):
     mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20, thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device='cuda')
