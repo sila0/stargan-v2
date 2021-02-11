@@ -338,9 +338,12 @@ def match_loss(matcher, x_real, x_fake):
 
     # ToPILImage
     for r, f in zip(x_real, x_fake):
-        x_real_images.append(transforms.ToPILImage()(r))
-        x_fake_images.append(transforms.ToPILImage()(f))
-        x_real_tensors.append(tensor(r))
+        r_im = transforms.ToPILImage()(r)
+        x_real_images.append(r_im)
+        x_real_tensors.append(tensor(r_im))
+
+        f_im = transforms.ToPILImage()(f)
+        x_fake_images.append(f_im)
 
     # x_real_images = [transforms.ToPILImage()(x) for x in x_real]
     # x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
