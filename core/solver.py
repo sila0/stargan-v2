@@ -279,11 +279,12 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
     loss = loss_adv + args.lambda_sty * loss_sty \
-        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc # + loss_m
+        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc + loss_m
     return loss, Munch(adv=loss_adv.item(),
                        sty=loss_sty.item(),
                        ds=loss_ds.item(),
-                       cyc=loss_cyc.item() )#, m=loss_m.item())
+                       cyc=loss_cyc.item(), 
+                       m=loss_m.item())
 
 
 def moving_average(model, model_test, beta=0.999):
