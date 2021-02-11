@@ -386,8 +386,8 @@ def match_loss(matcher, x_real, x_fake):
 
     # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
     loss = torch.linalg.norm(vector_real_x - vector_fake_x).mean()
-    print('vector shape:', vector_fake_x.shape)
-    print("match_loss:", loss)
+    # print('vector shape:', vector_fake_x.shape)
+    # print("match_loss:", loss)
 
     return loss
 
