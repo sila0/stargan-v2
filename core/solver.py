@@ -361,8 +361,11 @@ def match_loss(matcher, x_real, x_fake):
                     transforms.ToTensor(),
                     transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
 
+    c = 0
     for r_im, f_im, box in zip(x_real_images, x_fake_images, faces_tensor[0]):
         if box is not None:
+            r_im.save('r_crop'+str(c)+'.jpg')
+            f_im.save('f_crop'+str(c)+'.jpg')
             x_real_tensors.append(transform(r_im))
             x_fake_tensors.append(transform(f_im))            
             c += 1
