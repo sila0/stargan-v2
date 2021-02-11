@@ -52,6 +52,7 @@ class Solver(nn.Module):
         if args.mode == 'train':
             self.optims = Munch()
             for net in self.nets.keys():
+                print('net_name:', net)
                 if net == 'fan':
                     continue
                 self.optims[net] = torch.optim.Adam(
@@ -66,9 +67,6 @@ class Solver(nn.Module):
                 CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_optims.ckpt'), **self.optims)]
         else:
             self.ckptios = [CheckpointIO(ospj(args.checkpoint_dir, '{:06d}_nets_ema.ckpt'), **self.nets_ema)]
-
-        # self.mtcnn = MTCNN(image_size=160, margin=0, min_face_size=20,thresholds=[0.6, 0.7, 0.7], factor=0.709, post_process=True, device=self.device)
-        # self.resnet = InceptionResnetV1(pretrained='vggface2').eval()
 
         self.to(self.device)
 
