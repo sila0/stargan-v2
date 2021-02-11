@@ -330,16 +330,17 @@ def match_loss(matcher, x_real, x_fake):
     x_real_images = []
     x_fake_images = []
     x_real_tensors = []
+    x_fake_tensors = []
 
     # denormalize img
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
 
     # ToPILImage
-    for i in range(len(x_real)):
-        x_real_images.append(transforms.ToPILImage()(x_real[i]))
-        x_fake_images.append(transforms.ToPILImage()(x_fake[i]))
-        x_real_tensors.append(transforms.ToTensor()(x_real_images[i]))
+    for r, f in zip(x_real, x_fake)
+        x_real_images.append(transforms.ToPILImage()(r))
+        x_fake_images.append(transforms.ToPILImage()(f))
+        x_real_tensors.append(tensor(r))
 
     # x_real_images = [transforms.ToPILImage()(x) for x in x_real]
     # x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
