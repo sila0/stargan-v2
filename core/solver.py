@@ -351,7 +351,6 @@ def match_loss(matcher, x_real, x_fake):
 
     # detect face
     faces_tensor = detect_face(torch.stack(x_real_tensors))
-    print('detected:', faces_tensor.shape)
 
     # crop and resize
     # stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
