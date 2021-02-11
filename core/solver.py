@@ -327,33 +327,50 @@ def get_fake(nets, x_src, x_ref, y_ref):
 def match_loss(matcher, x_real, x_fake):
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
     # print(matcher(x_real))
+    x_real_images = []
+    x_fake_images = []
+    x_real_tensors = []
 
     # denormalize img
     x_real = denormalize(x_real)
     x_fake = denormalize(x_fake)
 
     # ToPILImage
-    x_real_images = [transforms.ToPILImage()(x) for x in x_real]
-    x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
-    teal_tensors = [tensor(x) for x in x_real_images]
+    for i in range(len(x_real)):
+        x_real_images.append(transforms.ToPILImage()(x_real[i]))
+        x_fake_images.append(transforms.ToPILImage()(x_fake[i]))
+        x_real_tensors.append(transforms.ToTensor()(x_real_images[i]))
+
+    # x_real_images = [transforms.ToPILImage()(x) for x in x_real]
+    # x_fake_images = [transforms.ToPILImage()(x) for x in x_fake]
+    # teal_tensors = [transforms.ToTensor()(x) for x in x_real_images]
 
     # detect face
-    print('x_real/x_real_stack:', x_real.shape, torch.stack(teal_tensors).shape)
-    print('x_real:', x_real)
-    print('torch.stack(teal_tensors)', torch.stack(teal_tensors))
-    detected_faces = detect_face(torch.stack(teal_tensors))
-    print('detected:', detected_faces)
+    faces_tensor = detect_face(torch.stack(x_real_tensors))
+    print('detected:', faces_tensor.shape)
 
     # crop and resize
-    stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
+    # stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
+    x_real_tensors.clear()
+    x_fake_tensors.clear()
+    transform = transforms.Compose([
+                    transforms.Resize((244,244), interpolation=2),
+                    transforms.ToTensor(),
+                    transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
+
+    for r_im, f_im, box in zip(x_real_images, x_fake_images, faces_tensor[0]):
+        if box is not None:
+            x_real_tensors.append(transform(r_im))
+            x_fake_tensors.append(transform(f_im))            
+            c += 1
 
     # standardization
-    stacked_real_tensor = fixed_image_standardization(stacked_real_tensor)
-    stacked_fake_tensor = fixed_image_standardization(stacked_fake_tensor)
+    # stacked_real_tensor = fixed_image_standardization(stacked_real_tensor)
+    # stacked_fake_tensor = fixed_image_standardization(stacked_fake_tensor)
 
     # vector
-    vector_real_x = resnet(stacked_real_tensor).cpu()
-    vector_fake_x = resnet(stacked_fake_tensor).cpu()
+    vector_real_x = matcher(stacked_real_tensor)
+    vector_fake_x = matcher(stacked_fake_tensor)
     # vector_real_x = resnet(stacked_real_tensor).detach().cpu()
     # vector_fake_x = resnet(stacked_fake_tensor).detach().cpu()
 
@@ -362,7 +379,8 @@ def match_loss(matcher, x_real, x_fake):
 
     # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
     loss = torch.linalg.norm(vector_real_x - vector_fake_x).mean()
-    # print("match_loss:", loss)
+    print('vector shape:', vector_fake_x.shape)
+    print("match_loss:", loss)
 
     return loss
 
