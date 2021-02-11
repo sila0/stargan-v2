@@ -375,8 +375,8 @@ def match_loss(matcher, x_real, x_fake):
     # stacked_fake_tensor = fixed_image_standardization(stacked_fake_tensor)
 
     # vector
-    vector_real_x = matcher(torch.stack(x_real_tensors))
-    vector_fake_x = matcher(torch.stack(x_fake_tensors))
+    vector_real_x = matcher(torch.stack(x_real_tensors).to('cuda'))
+    vector_fake_x = matcher(torch.stack(x_fake_tensors).to('cuda'))
     # vector_real_x = resnet(stacked_real_tensor).detach().cpu()
     # vector_fake_x = resnet(stacked_fake_tensor).detach().cpu()
 
