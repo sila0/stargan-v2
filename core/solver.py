@@ -365,9 +365,12 @@ def match_loss(matcher, x_real, x_fake):
     c = 0
     for r_im, f_im, box in zip(x_real_images, x_fake_images, faces_tensor[0]):
         if box is not None:
+            r_im = r_im.crop(box[0])
             r_im.save('r_crop'+str(c)+'.jpg')
-            f_im.save('f_crop'+str(c)+'.jpg')
             x_real_tensors.append(transform(r_im))
+
+            f_im = f_im.crop(box[0])
+            f_im.save('f_crop'+str(c)+'.jpg')
             x_fake_tensors.append(transform(f_im))            
             c += 1
 
