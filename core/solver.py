@@ -337,7 +337,7 @@ def match_loss(matcher, x_real, x_fake):
     x_fake = denormalize(x_fake)
 
     # ToPILImage
-    for r, f in zip(x_real, x_fake)
+    for r, f in zip(x_real, x_fake):
         x_real_images.append(transforms.ToPILImage()(r))
         x_fake_images.append(transforms.ToPILImage()(f))
         x_real_tensors.append(tensor(r))
