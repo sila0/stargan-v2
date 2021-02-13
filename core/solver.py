@@ -254,9 +254,6 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     out = nets.discriminator(x_fake, y_trg)
     loss_adv = adv_loss(out, 1)
 
-    # match loss
-    loss_m = match_loss(nets.matcher, x_real, x_fake)
-
     # style reconstruction loss
     s_pred = nets.style_encoder(x_fake, y_trg)
     loss_sty = torch.mean(torch.abs(s_pred - s_trg))
@@ -276,13 +273,25 @@ def compute_g_loss(nets, args, x_real, y_org, y_trg, z_trgs=None, x_refs=None, m
     x_rec = nets.generator(x_fake, s_org, masks=masks)
     loss_cyc = torch.mean(torch.abs(x_rec - x_real))
 
+    # match loss
+    real_desc, fake_desc = get_descriptor(nets.matcher, x_real, x_fake)
+    #loss_m = torch.linalg.norm(real_desc - fake_desc, 2, -1).mean()
+    loss_m = torch.mean(torch.abs(real_desc - fake_desc))
+    
+    # cycle-id loss
+    real_desc, rec_desc = get_descriptor(nets.matcher, x_real, x_rec)
+    loss_cyc_id = torch.mean(torch.abs(real_desc - rec_desc))
+
     loss = loss_adv + args.lambda_sty * loss_sty \
-        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc + loss_m
+        - args.lambda_ds * loss_ds + args.lambda_cyc * loss_cyc \
+        + loss_m + loss_cyc_id
+
     return loss, Munch(adv=loss_adv.item(),
                        sty=loss_sty.item(),
                        ds=loss_ds.item(),
                        cyc=loss_cyc.item(), 
-                       m=loss_m.item())
+                       m=loss_m.item(),
+                       id=loss_cyc_id.item())
 
 
 def moving_average(model, model_test, beta=0.999):
@@ -323,7 +332,7 @@ def get_fake(nets, x_src, x_ref, y_ref):
     save_image(x_concat, N+1, filename)
     del x_concat
 
-def match_loss(matcher, x_real, x_fake):
+def get_descriptor(matcher, x_real, x_fake):
     # resnet = InceptionResnetV1(pretrained='vggface2').eval()
     # print(matcher(x_real))
     x_real_images = []
@@ -355,7 +364,7 @@ def match_loss(matcher, x_real, x_fake):
     # stacked_real_tensor, stacked_fake_tensor = crop_resize(x_real, x_fake)
     x_real_tensors.clear()
     x_fake_tensors.clear()
-    transform = transforms.Compose([
+    normalize = transforms.Compose([
                     transforms.Resize((244,244), interpolation=2),
                     transforms.ToTensor(),
                     transforms.Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])])
@@ -365,11 +374,11 @@ def match_loss(matcher, x_real, x_fake):
         if box is not None:
             r_im = r_im.crop(box[0])
             r_im.save('r_crop'+str(c)+'.jpg')
-            x_real_tensors.append(transform(r_im))
+            x_real_tensors.append(normalize(r_im))
 
             f_im = f_im.crop(box[0])
             f_im.save('f_crop'+str(c)+'.jpg')
-            x_fake_tensors.append(transform(f_im))            
+            x_fake_tensors.append(normalize(f_im))            
             c += 1
 
     # standardization
@@ -386,11 +395,11 @@ def match_loss(matcher, x_real, x_fake):
     # print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
     # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
-    loss = torch.linalg.norm(vector_real_x - vector_fake_x, 2, -1).mean()
+    # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 2, -1).mean()
     # print('vector shape:', vector_fake_x.shape)
     # print("match_loss:", loss)
 
-    return loss
+    return vector_real_x, vector_fake_x
 
 def denormalize(image_tensor):
     out = (image_tensor + 1) / 2
