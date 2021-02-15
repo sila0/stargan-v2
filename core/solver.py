@@ -248,6 +248,10 @@ class Solver(nn.Module):
         x_fake = self.nets.generator(x_src, s_ref, masks=masks)
         print(x_fake.shape)
 
+        x_fake = denormalize(x_fake)
+        im = transforms.ToPILImage()(x_fake)
+        im.save('fake.jpg')
+
 
     @torch.no_grad()
     def evaluate(self):
