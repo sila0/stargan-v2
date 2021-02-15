@@ -237,7 +237,7 @@ class Solver(nn.Module):
 
         im_ref = Image.open(ref)
         x_ref = transform(im_ref)
-        x_ref = x_src.unsqueeze(0).to('cuda')
+        x_ref = x_ref.unsqueeze(0).to('cuda')
 
         s_ref = self.nets.style_encoder(x_ref, 0)
         print("x_ref:", x_ref.shape)
