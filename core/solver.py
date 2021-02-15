@@ -36,7 +36,6 @@ from torchvision import transforms
 class Solver(nn.Module):
     def __init__(self, args):
         super().__init__()
-        print("args:", args)
         self.args = args
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -200,6 +199,11 @@ class Solver(nn.Module):
         fname = ospj(args.result_dir, 'video_ref.mp4')
         print('Working on {}...'.format(fname))
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
+
+    @torch.no_grad()
+    def test(self):
+        args = self.args
+        print(args)
 
     @torch.no_grad()
     def evaluate(self):
@@ -394,8 +398,8 @@ def get_descriptor(matcher, x_real, x_fake):
     # print
     # print('vector size:', vector_real_x.shape, vector_fake_x.shape)
 
-    # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
-    # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 2, -1).mean()
+        # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 1, -1).mean()
+        # loss = torch.linalg.norm(vector_real_x - vector_fake_x, 2, -1).mean()
     # print('vector shape:', vector_fake_x.shape)
     # print("match_loss:", loss)
 

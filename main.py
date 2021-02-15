@@ -58,6 +58,8 @@ def main(args):
                                             shuffle=True,
                                             num_workers=args.num_workers))
         solver.train(loaders)
+    elif args.mode == 'test':
+        solver.test()
     elif args.mode == 'sample':
         assert len(subdirs(args.src_dir)) == args.num_domains
         assert len(subdirs(args.ref_dir)) == args.num_domains
@@ -178,6 +180,10 @@ if __name__ == '__main__':
     parser.add_argument('--sample_every', type=int, default=5000)
     parser.add_argument('--save_every', type=int, default=10000)
     parser.add_argument('--eval_every', type=int, default=50000)
+
+    # test
+    parser.add_argument('--src', type=str)
+    parser.add_argument('--ref', type=str)
 
     args = parser.parse_args()
     main(args)
