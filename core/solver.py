@@ -205,6 +205,7 @@ class Solver(nn.Module):
 
     @torch.no_grad()
     def test(self):
+        print('start test')
         args = self.args
         nets_ema = self.nets_ema
         self._load_checkpoint(args.resume_iter)
