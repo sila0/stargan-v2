@@ -235,10 +235,12 @@ class Solver(nn.Module):
         masks = self.nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
         print('masks:', masks)
 
-        s_ref = self.nets.style_encoder(x_ref, y_ref)
+        im_ref = Image.open(ref)
+        x_ref = transform(im_ref)
+        x_ref = x_src.unsqueeze(0).to('cuda')
+
+        s_ref = self.nets.style_encoder(x_ref, 0)
         print("x_ref:", x_ref.shape)
-        print("y_ref:", y_ref.shape)
-        print("s_ref.shape:", s_ref.shape)
 
         print('generating fake image...')
         x_fake = nets.generator(x_src, s_ref, masks=masks)
