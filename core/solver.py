@@ -245,7 +245,7 @@ class Solver(nn.Module):
         print("x_ref:", x_ref.shape)
 
         print('generating fake image...')
-        x_fake = nets.generator(x_src, s_ref, masks=masks)
+        x_fake = self.nets.generator(x_src, s_ref, masks=masks)
         print(x_fake.shape)
 
 
