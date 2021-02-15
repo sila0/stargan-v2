@@ -204,7 +204,7 @@ class Solver(nn.Module):
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
 
     @torch.no_grad()
-    def test(self):
+    def test2(self):
         print('start test')
         args = self.args
         nets_ema = self.nets_ema
