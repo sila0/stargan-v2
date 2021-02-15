@@ -204,7 +204,7 @@ class Solver(nn.Module):
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
 
     @torch.no_grad()
-    def test2(self):
+    def test(self):
         print('start test')
         args = self.args
         nets_ema = self.nets_ema
@@ -222,9 +222,6 @@ class Solver(nn.Module):
         wb = torch.ones(1, C, H, W).to(x_src.device)
         print("wb:", wb.shape)
 
-        x_src_with_wb = torch.cat([wb, x_src], dim=0)
-        print("x_src_with_wb:", x_src_with_wb.shape)
-
         masks = self.nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
         print('masks:', masks)
 
@@ -233,7 +230,7 @@ class Solver(nn.Module):
         print("y_ref:", y_ref.shape)
         print("s_ref.shape:", s_ref.shape)
 
-
+        print('generating fake image...')
         x_fake = nets.generator(x_src, s_ref, masks=masks)
         print(x_fake.shape)
 
