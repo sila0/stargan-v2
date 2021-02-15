@@ -224,15 +224,15 @@ class Solver(nn.Module):
 
         im_src = Image.open(src)
         x_src = transform(im_src)
-        x_src = x_src.unsqueeze(0).to('cuda')
-
+        x_src = x_src.unsqueeze(0).to('cudas')
+        
         print('x_src.size:', x_src.size())
         N, C, H, W = x_src.size()
 
         wb = torch.ones(1, C, H, W).to(x_src.device)
         print("wb:", wb.shape)
 
-        masks = self.nets.fan.get_heatmap(x_sr.) if args.w_hpf > 0 else None
+        masks = self.nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
         print('masks:', masks)
 
         s_ref = nets.style_encoder(x_ref, y_ref)
