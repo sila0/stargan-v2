@@ -241,11 +241,11 @@ class Solver(nn.Module):
 
         y = [0]
         y = tensor(y)
-        s_ref = self.nets.style_encoder(x_ref, y)
+        s_ref = self.nets_ema.style_encoder(x_ref, y)
         print("x_ref:", x_ref.shape)
 
         print('generating fake image...')
-        x_fake = self.nets.generator(x_src, s_ref, masks=masks)
+        x_fake = self.nets_ema.generator(x_src, s_ref, masks=masks)
         print(x_fake.shape)
 
         x_fake = denormalize(x_fake[0])
