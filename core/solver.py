@@ -206,6 +206,11 @@ class Solver(nn.Module):
 
     @torch.no_grad()
     def test(self):
+        transform = transforms.Compose([
+            transforms.Resize([256, 256]),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),])
+
         print('start test')
         args = self.args
         nets_ema = self.nets_ema
@@ -218,7 +223,7 @@ class Solver(nn.Module):
         print('Working on {}...'.format(fname))
 
         im_src = Image.open(src)
-        x_src = tensor(im_src).unsqueeze(0)
+        x_src = transform(im_src)
         N, C, H, W = x_src.size()
         wb = torch.ones(1, C, H, W).to(x_src.device)
         print("wb:", wb.shape)
