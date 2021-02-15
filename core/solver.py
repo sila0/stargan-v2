@@ -239,8 +239,7 @@ class Solver(nn.Module):
         x_ref = transform(im_ref)
         x_ref = x_ref.unsqueeze(0).to('cuda')
 
-        y = [0]
-        y = tensor(y)
+        y = tensor([args.y_ref])
         s_ref = self.nets_ema.style_encoder(x_ref, y)
         print("x_ref:", x_ref.shape)
 
