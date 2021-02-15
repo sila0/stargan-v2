@@ -239,7 +239,9 @@ class Solver(nn.Module):
         x_ref = transform(im_ref)
         x_ref = x_ref.unsqueeze(0).to('cuda')
 
-        s_ref = self.nets.style_encoder(x_ref, 0)
+        y = [0]
+        y = tensor(y)
+        s_ref = self.nets.style_encoder(x_ref, y)
         print("x_ref:", x_ref.shape)
 
         print('generating fake image...')
