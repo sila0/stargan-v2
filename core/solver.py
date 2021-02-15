@@ -248,7 +248,7 @@ class Solver(nn.Module):
         x_fake = self.nets.generator(x_src, s_ref, masks=masks)
         print(x_fake.shape)
 
-        x_fake = denormalize(x_fake)
+        x_fake = denormalize(x_fake[0])
         im = transforms.ToPILImage()(x_fake)
         im.save('fake.jpg')
 
