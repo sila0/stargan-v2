@@ -224,7 +224,7 @@ class Solver(nn.Module):
 
         im_src = Image.open(src)
         x_src = transform(im_src)
-        x_src = x_src.unsqueeze(0).to('cudas')
+        x_src = x_src.unsqueeze(0).to('cuda')
         
         print('x_src.size:', x_src.size())
         N, C, H, W = x_src.size()
