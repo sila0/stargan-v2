@@ -235,7 +235,7 @@ class Solver(nn.Module):
         masks = self.nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
         print('masks:', masks)
 
-        s_ref = nets.style_encoder(x_ref, y_ref)
+        s_ref = self.nets.style_encoder(x_ref, y_ref)
         print("x_ref:", x_ref.shape)
         print("y_ref:", y_ref.shape)
         print("s_ref.shape:", s_ref.shape)
