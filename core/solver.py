@@ -194,6 +194,9 @@ class Solver(nn.Module):
 
         fname = ospj(args.result_dir, 'reference.jpg')
         print('Working on {}...'.format(fname))
+        print('ref.x:', ref.x)
+        print('ref.y:', ref.y)
+
         utils.translate_using_reference(nets_ema, args, src.x, ref.x, ref.y, fname)
 
         fname = ospj(args.result_dir, 'video_ref.mp4')
@@ -203,7 +206,35 @@ class Solver(nn.Module):
     @torch.no_grad()
     def test(self):
         args = self.args
-        print(args)
+        nets_ema = self.nets_ema
+        self._load_checkpoint(args.resume_iter)
+
+        src = args.src
+        ref = args.ref
+
+        fname = ospj(args.result_dir, 'reference.jpg')
+        print('Working on {}...'.format(fname))
+
+        im_src = Image.open(src)
+        x_src = tensor(im_src).unsqueeze(0)
+        N, C, H, W = x_src.size()
+        wb = torch.ones(1, C, H, W).to(x_src.device)
+        print("wb:", wb.shape)
+
+        x_src_with_wb = torch.cat([wb, x_src], dim=0)
+        print("x_src_with_wb:", x_src_with_wb.shape)
+
+        masks = nets.fan.get_heatmap(x_src) if args.w_hpf > 0 else None
+        print('masks:', masks)
+
+        s_ref = nets.style_encoder(x_ref, y_ref)
+        print("x_ref:", x_ref.shape)
+        print("y_ref:", y_ref.shape)
+        print("s_ref.shape:", s_ref.shape)
+
+
+        x_fake = nets.generator(x_src, s_ref, masks=masks)
+
 
     @torch.no_grad()
     def evaluate(self):
