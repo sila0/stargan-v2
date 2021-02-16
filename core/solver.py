@@ -205,14 +205,13 @@ class Solver(nn.Module):
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
 
     @torch.no_grad()
-    def test(self):
+    def test(self, args):
         transform = transforms.Compose([
             transforms.Resize([256, 256]),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),])
 
         print('start test')
-        args = self.args
         nets_ema = self.nets_ema
         self._load_checkpoint(args.resume_iter)
 
