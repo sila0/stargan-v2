@@ -205,7 +205,7 @@ class Solver(nn.Module):
         utils.video_ref(nets_ema, args, src.x, ref.x, ref.y, fname)
 
     @torch.no_grad()
-    def test(self, args):
+    def test(self, args, i):
         transform = transforms.Compose([
             transforms.Resize([256, 256]),
             transforms.ToTensor(),
@@ -238,7 +238,10 @@ class Solver(nn.Module):
 
         x_fake = denormalize(x_fake[0])
         im = transforms.ToPILImage()(x_fake)
-        im.save('fake.jpg')
+
+        fname = str(i) + '.jpg'
+        im.save(fname)
+        return fname
 
 
     @torch.no_grad()
